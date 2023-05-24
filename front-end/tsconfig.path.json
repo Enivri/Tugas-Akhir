@@ -1,0 +1,37 @@
+{
+    "compilerOptions": {
+        "baseUrl": "./src",
+        "paths": {
+            "@store": [
+                "./store"
+            ],
+            "@store/*": [
+                "./store/*"
+            ],
+            "@routes/*": [
+                "./routes/*"
+            ],
+            "@constants/*": [
+                "./constants/*"
+            ],
+            "@config/*": [
+                "./config/*"
+            ],
+            "@assets/*": [
+                "./assets/*"
+            ],
+            "@services/*": [
+                "./services/*"
+            ],
+            "@components/*": [
+                "./components/*"
+            ],
+            "@models/*": [
+                "./models/*"
+            ],
+            "@utils/*": [
+                "./utils/*"
+            ]
+        }
+    }
+}

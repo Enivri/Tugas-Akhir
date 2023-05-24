@@ -1,1 +1,0 @@
-from models import checkUp, diagnosis, operation, patient, prediction, user

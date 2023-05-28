@@ -10,14 +10,21 @@ import jwt
 import cloudinary
 import cloudinary.uploader
 import cloudinary.api
+from tensorflow.keras.models import load_model
 
 load_dotenv()
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URI')
 app.config['SECRET_KEY']='004f2af45d3a4e161a7dd2d17fdae47f'
-cloudinary.config(cloud_name = os.getenv('CLOUD_NAME'), api_key=os.getenv('API_KEY'), 
-    api_secret=os.getenv('API_SECRET'))
+app.config["ML_MODEL"] = load_model(os.path.join(os.getcwd(), "MachineLearning.h5"))
+app.config["ML_THRESHOLD"] = 0
+
+cloudinary.config(
+    cloud_name = os.getenv('CLOUD_NAME'), 
+    api_key=os.getenv('API_KEY'), 
+    api_secret=os.getenv('API_SECRET'),
+)
 db = SQLAlchemy(app)
 bcrypt = Bcrypt(app)
 CORS(app)

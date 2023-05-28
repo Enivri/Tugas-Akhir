@@ -1,7 +1,6 @@
 import React, { ChangeEvent } from 'react'
 import { Wrapper, Title, Report, ReportTitle, Label, Control, Group, Content, SubTitle, Bottom, SubmitBTN, CancelBTN, Eye, EyeBox, GroupEye, Desc, Formx } from './EditDiagnosis.styles'
 import Row from 'react-bootstrap/Row';
-import Col from 'react-bootstrap/Col';
 import { useEffect, useState } from 'react';
 import { useAppDispatch } from '@store';
 import { statusActions } from '@store/status';
@@ -202,8 +201,7 @@ type Params = {
                 <Content className='my-3'>
                         <SubTitle>Identitas Pasien</SubTitle>
                         <Formx onSubmit = {onSubmit}>
-                        <Row>
-                            <Col>                        
+                        <Row>                      
                                 <Group>
                                     <Label>NIK</Label>
                                     <Control type="text" placeholder="NIK"  id="nik" value={editDiagnosisRequest.nik} onChange={onChange}/>
@@ -242,17 +240,13 @@ type Params = {
                                     <Label>Kondisi Mata Kiri</Label>
                                     <Control type="text" placeholder="Normal/Katarak"  id="left_eye_cond" value={editDiagnosisRequest.left_eye_cond} onChange={onChange}/>
                                 </Group>
-                            </Col>
 
-                            <Col>
-                            </Col>
-                            
                             <Label>Description</Label>
                             <Desc placeholder="Type here" id="description" value={editDiagnosisRequest.description} onChange={onChange}/>
                         </Row>
 
                         <Bottom>
-                            <CancelBTN to="/patient">Cancel</CancelBTN>
+                            <CancelBTN to="/diagnosis">Cancel</CancelBTN>
                             <SubmitBTN type="submit">Submit</SubmitBTN>
                         </Bottom>
                         </Formx>

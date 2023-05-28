@@ -31,8 +31,11 @@ export const SideButton = styled(Button)`
     background-color: transparent !important;
     border-color: transparent !important;
     color: white !important;
-    /* position: absolute; */
     left: 0%;
+    display: none;
+    @media screen and (max-width: 480px) {
+    display: initial;
+    }
 `
 
 

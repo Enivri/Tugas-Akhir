@@ -94,8 +94,7 @@ const AddCheckUp = () => {
 
                 <Content className='my-3'>
                         <Formx onSubmit = {onSubmit}>
-                        <Row>
-                            <Col>                        
+                        <Row>                    
                                 <Group>
                                     <Label>Operation Code</Label>
                                     <Control type="text" placeholder="Code" id="code" value={createCheckUpRequest.code} onChange={onChange}/>
@@ -124,11 +123,6 @@ const AddCheckUp = () => {
                                         </GroupEye>
                                     </EyeBox> 
                                 </Eye>
-
-                            </Col>
-
-                            <Col>
-                            </Col>
 
                                 <Label>Description</Label>
                                 <Desc placeholder="Type here" id="description" value={createCheckUpRequest.description} onChange={onChange}/>

@@ -23,96 +23,8 @@ const ViewCheckUp= () => {
             left_eye_pic: "",
             description: "",
             created_at: "",
-            user: {
-                id: 0,
-                name: "",
-                nik: "",
-                email: "",
-                password: "string",
-                town: "",
-                gender: "",
-                birth_date: "",
-                phone: "",
-                picture: "",
-                role: "",
-                created_at: "",
-                },
-            operation:{
-                id: 0,
-                patient_id: 0,
-                doctor_id:0,
-                diagnosis_id: 0,
-                code: "",
-                right_eye_pic: "",
-                left_eye_pic: "",
-                result:"",
-                description:"",
-                created_at: "",
-                user: {
-                    id: 0,
-                    name: "",
-                    nik: "",
-                    email: "",
-                    password: "string",
-                    town: "",
-                    gender: "",
-                    birth_date: "",
-                    phone: "",
-                    picture: "",
-                    role: "",
-                    created_at: "",
-                    },
-                diagnosis:{
-                    id: 0,
-                    patient_id: 0,
-                    doctor_id:0,
-                    prediction_id: 0,
-                    code: "",
-                    right_eye_pic: "",
-                    left_eye_pic: "",
-                    right_eye_cond: "",
-                    left_eye_cond:"",
-                    description:"",
-                    created_at: "",
-                    user: {
-                        id: 0,
-                        name: "",
-                        nik: "",
-                        email: "",
-                        password: "string",
-                        town: "",
-                        gender: "",
-                        birth_date: "",
-                        phone: "",
-                        picture: "",
-                        role: "",
-                        created_at: "",
-                        },
-                    prediction:{
-                        id: 0,
-                        patient_id: 0,
-                        user: {
-                            id: 0,
-                            name: "",
-                            nik: "",
-                            email: "",
-                            password: "string",
-                            town: "",
-                            gender: "",
-                            birth_date: "",
-                            phone: "",
-                            picture: "",
-                            role: "",
-                            created_at: "",
-                            },
-                        right_eye_pic: "",
-                        left_eye_pic: "",
-                        right_eye_cond: "",
-                        left_eye_cond:"",
-                        created_at: ""
-                    }
-                }   
-            }
+            user: undefined,
+            operation: undefined,
 })
     
     const params = useParams<Params>()
@@ -158,7 +70,7 @@ const ViewCheckUp= () => {
                             <SubContent>
                                 <Titlespace>Tanggal Lahir <br/>(dd/mm/yyyy)</Titlespace>
                                 <p>:</p>
-                                <p>{ parseDate(checkup?.user?.birth_date) }</p>
+                                <p>{ parseDate(checkup?.user?.birth_date ?? "") }</p>
                             </SubContent>
                             <SubContent>
                                 <Titlespace>Kota</Titlespace>

@@ -57,7 +57,7 @@ const CheckUp = () => {
             <AddNew to={generatePath(endpoints.addcheckup)}>Add New</AddNew>
         </Options>
 
-        <Table striped bordered hover>
+        <Table responsive striped bordered hover>
         <thead>
             <tr>
             <th>No</th>
@@ -76,11 +76,11 @@ const CheckUp = () => {
                     <tr key={index}>
                         <td>{ LIMIT*(currentPage-1)+index+1 }</td>
                         <td>{ parseDate(checkUp.created_at) }</td>
-                        <td>{ checkUp.operation.code}</td>
-                        <td>{ checkUp.user.name }</td>
-                        <td>{ checkUp.user.nik }</td>
-                        <td>{ checkUp.user.gender }</td>
-                        <td>{ checkUp.user.town }</td>
+                        <td>{ checkUp.operation?.code}</td>
+                        <td>{ checkUp.user?.name }</td>
+                        <td>{ checkUp.user?.nik }</td>
+                        <td>{ checkUp.user?.gender }</td>
+                        <td>{ checkUp.user?.town }</td>
                         <td>
                         <ActionButton to={generatePath(endpoints.viewcheckup, { checkupId: checkUp.id })}>
                             <IconAction className="fa-regular fa-file-lines"></IconAction>

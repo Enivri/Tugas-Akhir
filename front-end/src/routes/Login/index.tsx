@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { Wrapper, BackgroundImage, Content, Title, SignInForm, SignInTitle, SignInButton, Label, TextInput } from './Login.styles'
+import { Wrapper, BackgroundImage, Content, Title, SignInForm, SignInTitle, SignInButton, Label, TextInput, SignUpButton } from './Login.styles'
 import Image from '@assets/background.jpg'
 import { login } from '@services/login'
 import { useAppDispatch } from '@store'
@@ -48,6 +48,7 @@ const Login = () => {
                         <TextInput type="password" name="password" placeholder="Password" value={form.password} onChange={onChange} />
                     </Label>
                     <SignInButton type="submit" variant="primary">SIGN IN</SignInButton>    
+                    <SignUpButton to="/signup">SIGN UP</SignUpButton>    
                 </SignInForm>
             </Content>
         </Wrapper>

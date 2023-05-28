@@ -59,7 +59,7 @@ const  Doctor = () => {
             <AddNew to={generatePath(endpoints.adddoctor)}>Add New</AddNew>
         </Options>
 
-        <Table striped bordered hover>
+        <Table responsive striped bordered hover>
         <thead>
             <tr>
             <th>No</th>

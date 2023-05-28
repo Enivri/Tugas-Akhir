@@ -1,7 +1,6 @@
 import React, { ChangeEvent } from 'react'
 import { Wrapper, Title, Report, ReportTitle, Label, Control, Group, Content, Bottom, SubmitBTN, CancelBTN, Eye, EyeBox, GroupEye, Desc, Formx } from './EditOperation.styles'
 import Row from 'react-bootstrap/Row';
-import Col from 'react-bootstrap/Col';
 import { useEffect, useState } from 'react';
 import { useAppDispatch } from '@store';
 import { statusActions } from '@store/status';
@@ -224,8 +223,7 @@ type Params = {
 
                 <Content className='my-3'>
                         <Formx onSubmit = {onSubmit}>
-                        <Row>
-                            <Col>                        
+                        <Row>                      
                                 <Group>
                                     <Label>Diagnosis Code</Label>
                                     <Control type="text" placeholder="Code"  id="code" value={editOperationRequest.code} onChange={onChange}/>
@@ -259,18 +257,13 @@ type Params = {
                                     <Label>Result</Label>
                                     <Control type="text" placeholder="Successful/Unsuccessful"  id="result" value={editOperationRequest.result} onChange={onChange}/>
                                 </Group>
-
-                            </Col>
-
-                            <Col>
-                            </Col>
                             
                             <Label>Description</Label>
                             <Desc placeholder="Type here" id="description" value={editOperationRequest.description} onChange={onChange}/>
                         </Row>
 
                         <Bottom>
-                            <CancelBTN to="/patient">Cancel</CancelBTN>
+                            <CancelBTN to="/operation">Cancel</CancelBTN>
                             <SubmitBTN type="submit">Submit</SubmitBTN>
                         </Bottom>
                         </Formx>

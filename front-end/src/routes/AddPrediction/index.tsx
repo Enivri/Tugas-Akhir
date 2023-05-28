@@ -1,7 +1,6 @@
 import React, { ChangeEvent, useState } from 'react'
 import { Wrapper, Title, Report, ReportTitle, Label, Control, Group, Content, SubTitle, Bottom, SubmitBTN, CancelBTN, Eye, EyeBox, GroupEye, Formx } from './AddPrediction.styles'
 import Row from 'react-bootstrap/Row';
-import Col from 'react-bootstrap/Col';
 import { useAppDispatch } from '@store';
 import { useNavigate } from 'react-router-dom';
 import { CreatePredictionRequest, CreatePredictionService } from '@services/createprediction';
@@ -17,8 +16,6 @@ const AddPrediction = () => {
         nik:"",
         right_eye_pic: undefined,
         left_eye_pic: undefined,
-        right_eye_cond: "",
-        left_eye_cond: "",
     })
     
 
@@ -96,8 +93,7 @@ const AddPrediction = () => {
                 <Content className='my-3'>
                         <SubTitle>Identitas Pasien</SubTitle>
                         <Formx onSubmit = {onSubmit}>
-                        <Row>
-                            <Col>                        
+                        <Row>                      
                                 <Group>
                                     <Label>NIK</Label>
                                     <Control type="text" placeholder="NIK" id="nik" value={createPredictionRequest.nik} onChange={onChange}/>
@@ -127,21 +123,6 @@ const AddPrediction = () => {
                                     </EyeBox> 
                                 </Eye>
 
-                                <Group>
-                                    <Label>Kondisi Mata Kanan</Label>
-                                    <Control type="text" placeholder="Normal/Katarak" id="right_eye_cond" value={createPredictionRequest.right_eye_cond} onChange={onChange}/>
-                                </Group>
-
-                                <Group>
-                                    <Label>Kondisi Mata Kiri</Label>
-                                    <Control type="text" placeholder="Normal/Katarak" id="left_eye_cond" value={createPredictionRequest.left_eye_cond} onChange={onChange}/>
-                                </Group>
-
-                            </Col>
-
-                            <Col>
-                            
-                            </Col>
                         </Row>
 
                         <Bottom>

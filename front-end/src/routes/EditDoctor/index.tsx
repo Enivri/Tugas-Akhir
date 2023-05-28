@@ -203,7 +203,7 @@ const EditDoctor = () => {
                             </Row>
 
                         <Bottom>
-                            <CancelBTN to="/patient">Cancel</CancelBTN>
+                            <CancelBTN to="/doctor">Cancel</CancelBTN>
                             <SubmitBTN type="submit">Submit</SubmitBTN>
                         </Bottom>
                         </Formx>

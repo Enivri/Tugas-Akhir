@@ -1,7 +1,6 @@
 import React, { ChangeEvent, useState } from 'react'
 import { Wrapper, Title, Report, ReportTitle, Label, Control, Group, Content, SubTitle, Bottom, SubmitBTN, CancelBTN, Eye, EyeBox, GroupEye, Desc, Formx} from './AddDiagnosis.styles'
 import Row from 'react-bootstrap/Row';
-import Col from 'react-bootstrap/Col';
 import { useAppDispatch } from '@store';
 import { useNavigate } from 'react-router-dom';
 import { statusActions } from '@store/status';
@@ -97,8 +96,7 @@ const AddDiagnosis = () => {
                 <Content className='my-3'>
                         <SubTitle>Identitas Pasien</SubTitle>
                         <Formx onSubmit = {onSubmit}>
-                        <Row>
-                            <Col>                        
+                        <Row>                   
                                 <Group>
                                     <Label>NIK</Label>
                                     <Control type="text" placeholder="NIK" id="nik" value={createDiagnosisRequest.nik} onChange={onChange}/>
@@ -137,10 +135,6 @@ const AddDiagnosis = () => {
                                     <Label>Kondisi Mata Kiri</Label>
                                     <Control type="text" placeholder="Normal/Katarak" id="left_eye_cond" value={createDiagnosisRequest.left_eye_cond} onChange={onChange}/>
                                 </Group>
-                            </Col>
-
-                            <Col>
-                            </Col>
 
                                 <Label>Description</Label>
                                 <Desc placeholder="Type here" id="description" value={createDiagnosisRequest.description} onChange={onChange}/>

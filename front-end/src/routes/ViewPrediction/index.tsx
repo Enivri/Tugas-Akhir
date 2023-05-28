@@ -7,7 +7,7 @@ import { statusActions } from '@store/status';
 import { useParams } from 'react-router-dom';
 import admin from '@constants/routes/admin';
 import { parseDate } from '@utils/converter';
-import { GetPredictionResponse, GetPredictionService } from '@services/viewprediction';
+import { GetPredictionService } from '@services/viewprediction';
 import { Prediction } from '@models/Prediction';
 
 type Params = {
@@ -66,7 +66,7 @@ const ViewPrediction = () => {
                 <ReportTitle>View Prediction Detail</ReportTitle>
                 <Content>
                     <Identity>
-                        <Col>           
+                        {/* <Col>            */}
                             <SubTitle>
                                 Identitas Pasien
                             </SubTitle>
@@ -102,11 +102,11 @@ const ViewPrediction = () => {
                                 <p>{ prediction?.user?.phone }</p>
                             </SubContent>
 
-                        </Col>
+                        {/* </Col> */}
                         
-                        <ImageDiv>
+                        {/* <ImageDiv>
                             <Pasfoto src={prediction?.user?.picture} alt="Image eror" />
-                        </ImageDiv>
+                        </ImageDiv> */}
                     </Identity>
 
                     <Eyes>

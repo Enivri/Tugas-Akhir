@@ -1,7 +1,6 @@
 import React, { ChangeEvent } from 'react'
 import { Wrapper, Title, Report, ReportTitle, Label, Control, Group, Content, Bottom, SubmitBTN, CancelBTN, Eye, EyeBox, GroupEye, Desc, Formx } from './EditCheckUp.styles'
 import Row from 'react-bootstrap/Row';
-import Col from 'react-bootstrap/Col';
 import { useEffect, useState } from 'react';
 import { useAppDispatch } from '@store';
 import { statusActions } from '@store/status';
@@ -26,96 +25,8 @@ type Params = {
             left_eye_pic: "",
             description: "",
             created_at: "",
-            user: {
-                id: 0,
-                name: "",
-                nik: "",
-                email: "",
-                password: "string",
-                town: "",
-                gender: "",
-                birth_date: "",
-                phone: "",
-                picture: "",
-                role: "",
-                created_at: "",
-                },
-            operation:{
-                id: 0,
-                patient_id: 0,
-                doctor_id:0,
-                diagnosis_id: 0,
-                code: "",
-                right_eye_pic: "",
-                left_eye_pic: "",
-                result:"",
-                description:"",
-                created_at: "",
-                user: {
-                    id: 0,
-                    name: "",
-                    nik: "",
-                    email: "",
-                    password: "string",
-                    town: "",
-                    gender: "",
-                    birth_date: "",
-                    phone: "",
-                    picture: "",
-                    role: "",
-                    created_at: "",
-                    },
-                diagnosis:{
-                    id: 0,
-                    patient_id: 0,
-                    doctor_id:0,
-                    prediction_id: 0,
-                    code: "",
-                    right_eye_pic: "",
-                    left_eye_pic: "",
-                    right_eye_cond: "",
-                    left_eye_cond:"",
-                    description:"",
-                    created_at: "",
-                    user: {
-                        id: 0,
-                        name: "",
-                        nik: "",
-                        email: "",
-                        password: "string",
-                        town: "",
-                        gender: "",
-                        birth_date: "",
-                        phone: "",
-                        picture: "",
-                        role: "",
-                        created_at: "",
-                        },
-                    prediction:{
-                        id: 0,
-                        patient_id: 0,
-                        user: {
-                            id: 0,
-                            name: "",
-                            nik: "",
-                            email: "",
-                            password: "string",
-                            town: "",
-                            gender: "",
-                            birth_date: "",
-                            phone: "",
-                            picture: "",
-                            role: "",
-                            created_at: "",
-                            },
-                        right_eye_pic: "",
-                        left_eye_pic: "",
-                        right_eye_cond: "",
-                        left_eye_cond:"",
-                        created_at: ""
-                    }
-                }   
-            }
+            user: undefined,
+            operation:undefined,
             },)
 
             const [editCheckUpRequest, setEditCheckUpRequest] = useState<EditCheckUpParams>({
@@ -159,7 +70,7 @@ type Params = {
                         setEditCheckUpRequest((prev) => ({
                             ...prev,
                             checkupId: responseData.id,
-                            code: responseData.operation.code,
+                            code: responseData.operation?.code ?? "",
                             patient_id: responseData.patient_id,
                             operation_id: responseData.operation_id,
                             right_eye_pic: right_eye_pic ,
@@ -246,8 +157,7 @@ type Params = {
 
                 <Content className='my-3'>
                         <Formx onSubmit = {onSubmit}>
-                        <Row>
-                            <Col>                        
+                        <Row>                     
                                 <Group>
                                 <Label>Operation Code</Label>
                                     <Control type="text" placeholder="Code"  id="code" value={editCheckUpRequest.code} onChange={onChange}/>
@@ -277,17 +187,12 @@ type Params = {
                                     </EyeBox> 
                                 </Eye>
 
-                            </Col>
-
-                            <Col>
-                            </Col>
-
                             <Label>Description</Label>
                             <Desc placeholder="Type here" id="description" value={editCheckUpRequest.description} onChange={onChange}/>
                         </Row>
 
                         <Bottom>
-                            <CancelBTN to="/patient">Cancel</CancelBTN>
+                            <CancelBTN to="/checkup">Cancel</CancelBTN>
                             <SubmitBTN type="submit">Submit</SubmitBTN>
                         </Bottom>
                         </Formx>

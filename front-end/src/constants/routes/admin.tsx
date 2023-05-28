@@ -1,6 +1,7 @@
 export default {
     index: "/",
     login: "/login",
+    signup: "/signup",
     home: "/home",
     patient: "/patient",
     addpatient: "/addpatient",

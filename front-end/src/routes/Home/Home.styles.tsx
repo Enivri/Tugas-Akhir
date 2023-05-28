@@ -23,6 +23,14 @@ export const HomeOption = styled(Card)`
     -webkit-box-shadow: 0px 11px 27px 0px rgba(0,0,0,0.5);
     -moz-box-shadow: 0px 11px 27px 0px rgba(0,0,0,0.5);
     margin-bottom: 30px;
+    @media screen and (max-width: 1440px) {
+    width: 200px;
+    height: 250px;
+    }
+    @media screen and (max-width: 480px) {
+    width: 200px;
+    height: 250px;
+    }
 `
 export const TopCard = styled.div`
     height: 70%;
@@ -54,6 +62,7 @@ export const OptionRow = styled(Row)`
     justify-content: center;
 `
 export const OptionCol = styled(Col)`
+    padding: 0;
 `
 export const Header = styled(Link)`
     font-size: 2rem;

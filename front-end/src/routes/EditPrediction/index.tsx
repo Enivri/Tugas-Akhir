@@ -1,7 +1,6 @@
 import React, { ChangeEvent } from 'react'
 import { Wrapper, Title, Report, ReportTitle, Label, Control, Group, Content, SubTitle, Bottom, SubmitBTN, CancelBTN, Eye, EyeBox, GroupEye } from './EditPrediction.styles'
 import Row from 'react-bootstrap/Row';
-import Col from 'react-bootstrap/Col';
 import { useEffect, useState } from 'react';
 import { useAppDispatch } from '@store';
 import { statusActions } from '@store/status';
@@ -47,8 +46,6 @@ type Params = {
                 patient_id: 0,
                 right_eye_pic: undefined,
                 left_eye_pic: undefined,
-                right_eye_cond: "",
-                left_eye_cond:"",
                 nik: "",
             })
             
@@ -86,8 +83,6 @@ type Params = {
                             patient_id: responseData.patient_id,
                             right_eye_pic: right_eye_pic ,
                             left_eye_pic: left_eye_pic,
-                            right_eye_cond: responseData.right_eye_cond,
-                            left_eye_cond: responseData.left_eye_cond,
                             nik: responseData.user.nik,
                         }))
                     }
@@ -167,12 +162,10 @@ type Params = {
             
             <Report>
                 <ReportTitle>Prediction Form</ReportTitle>
-
                 <Content className='my-3'>
                         <SubTitle>Identitas Pasien</SubTitle>
                         <Form onSubmit = {onSubmit}>
                         <Row>
-                            <Col>                        
                                 <Group>
                                     <Label>NIK</Label>
                                     <Control type="text" placeholder="NIK"  id="nik" value={editPredictionRequest.nik} onChange={onChange}/>
@@ -201,24 +194,10 @@ type Params = {
                                         </GroupEye>
                                     </EyeBox> 
                                 </Eye>
-
-                                <Group>
-                                    <Label>Kondisi Mata Kanan</Label>
-                                    <Control type="text" placeholder="Normal/Katarak"  id="right_eye_cond" value={editPredictionRequest.right_eye_cond} onChange={onChange}/>
-                                </Group>
-
-                                <Group>
-                                    <Label>Kondisi Mata Kiri</Label>
-                                    <Control type="text" placeholder="Normal/Katarak"  id="left_eye_cond" value={editPredictionRequest.left_eye_cond} onChange={onChange}/>
-                                </Group>
-                            </Col>
-
-                            <Col>
-                            </Col>
                         </Row>
 
                         <Bottom>
-                            <CancelBTN to="/patient">Cancel</CancelBTN>
+                            <CancelBTN to="/prediction">Cancel</CancelBTN>
                             <SubmitBTN type="submit">Submit</SubmitBTN>
                         </Bottom>
                         </Form>

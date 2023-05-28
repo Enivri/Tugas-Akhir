@@ -8,6 +8,7 @@ import store from '@store';
 import 'react-toastify/dist/ReactToastify.css';
 import routes from '@constants/routes/api'
 import Login from '@routes/Login';
+import SignUp from '@routes/SignUp';
 import Home from '@routes/Home';
 import Patient from '@routes/Patient'
 import AddPatient from '@routes/AddPatient';
@@ -42,6 +43,7 @@ const App: React.FC = () => {
 			<Router>
 				<Routes>
 					<Route path={routes.login} element={<Login />}/>
+					<Route path={routes.signup} element={<SignUp />}/>
 					<Route path="/" element={<Middleware />}>
 						<Route path={routes.home} element={<Home />}/>
 						<Route path={adminRoutes.patient} element={<Patient />}/>

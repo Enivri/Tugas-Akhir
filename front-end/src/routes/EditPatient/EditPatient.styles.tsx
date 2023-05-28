@@ -11,7 +11,10 @@ export const Title = styled.div`
     font-size: 1.5rem;
     margin-top: 75px;
     margin-bottom: 20px;
+    margin-left: 100px;
+    @media screen and (max-width: 480px) {
     margin-left: 30px;
+    }
 `
 export const Report = styled.div`
     width: 90vw;
@@ -28,6 +31,9 @@ export const Label = styled(Form.Label)`
 `
 export const Control = styled(Form.Control)`
     width: 20vw;
+    @media screen and (max-width: 480px) {
+    width: 40vw;
+    }
 `
 export const Group = styled(Form.Group)`
     display: flex;
@@ -35,6 +41,10 @@ export const Group = styled(Form.Group)`
     margin-bottom: 10px;
 `
 export const Content = styled(Container)`
+    width: 60vw;
+    @media screen and (max-width: 480px) {
+    width: 80vw;
+    }
 `
 export const SubTitle = styled.div`
     font-size: 1.3rem;

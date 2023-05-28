@@ -11,6 +11,6 @@ export type CheckUp = {
     left_eye_pic?: string
     description: string
     created_at: string
-    user: User
-    operation : Operation
+    user?: User
+    operation?: Operation
 }

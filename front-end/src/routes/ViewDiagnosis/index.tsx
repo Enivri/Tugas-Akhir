@@ -61,7 +61,7 @@ const ViewDiagnosis= () => {
                 left_eye_pic: "",
                 right_eye_cond: "",
                 left_eye_cond:"",
-                created_at: ""
+                created_at: "",
             },
 })
     

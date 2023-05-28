@@ -1,24 +1,41 @@
 import { RootState, useAppSelector } from '@store'
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import { generatePath, useNavigate } from 'react-router-dom'
 import {Wrapper, SideBar, IconButton, SideButton, BottomButton, UpperOptions} from './Sidebar.style'
 import endpoints from '@constants/routes/admin';
 
 const SidebarComponent = () => {
     const isSidebarOpen = useAppSelector((state: RootState) => state.status.isSidebarOpen)
+    const [isDesktop, setIsDesktop] = useState(false)
     const navigate = useNavigate()
     const onClick = () => {
         localStorage.removeItem("credentials");
         navigate(generatePath(endpoints.login))
     }
 
+    useEffect(() => {
+        const checkIsDesktop = () => {
+            const width = window.innerWidth
+            if (width < 480) {
+                setIsDesktop(false)
+            } else {
+                setIsDesktop(true)
+            }
+        }
+
+        checkIsDesktop()
+        window.addEventListener("resize", checkIsDesktop)
+        return () => window.removeEventListener("resize", checkIsDesktop)
+    }, [])
+
     return (
         <Wrapper>
-            <SideBar className={isSidebarOpen ? "active" : ""}>
+            <SideBar className={isDesktop || isSidebarOpen ? "active" : ""}>
                 <UpperOptions>
                     <SideButton to="/home">
                         <IconButton className="fa-solid fa-house"></IconButton>
                         Home
+                        {/* {isDesktop ? "true" : "false"} */}
                     </SideButton>
 
                     <SideButton to={generatePath(endpoints.patient)}>

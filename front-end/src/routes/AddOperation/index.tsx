@@ -1,7 +1,6 @@
 import React, { ChangeEvent, useState } from 'react'
 import { Wrapper, Title, Report, ReportTitle, Label, Control, Group, Content, Bottom, SubmitBTN, CancelBTN, Eye, EyeBox, GroupEye, Desc, Formx} from './AddOperation.styles'
 import Row from 'react-bootstrap/Row';
-import Col from 'react-bootstrap/Col';
 import { useAppDispatch } from '@store';
 import { useNavigate } from 'react-router-dom';
 import { statusActions } from '@store/status';
@@ -95,8 +94,7 @@ const AddOperation = () => {
 
                 <Content className='my-3'>
                         <Formx onSubmit = {onSubmit}>
-                        <Row>
-                            <Col>                        
+                        <Row>                   
                                 <Group>
                                     <Label>Diagnosis Code</Label>
                                     <Control type="text" placeholder="Code" id="code" value={createOperationRequest.code} onChange={onChange}/>
@@ -130,11 +128,6 @@ const AddOperation = () => {
                                     <Label>Result</Label>
                                     <Control type="text" placeholder="Successful/Unsuccessful" id="result" value={createOperationRequest.result} onChange={onChange}/>
                                 </Group>
-
-                            </Col>
-
-                            <Col>
-                            </Col>
 
                                 <Label>Description</Label>
                                 <Desc placeholder="Type here" id="description" value={createOperationRequest.description} onChange={onChange}/>

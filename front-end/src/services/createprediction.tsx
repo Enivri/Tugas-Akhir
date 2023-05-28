@@ -12,8 +12,6 @@ export interface CreatePredictionRequest {
     nik: string
     right_eye_pic?: File
     left_eye_pic?: File
-    right_eye_cond: string
-    left_eye_cond: string
 }
 
 export const CreatePredictionService = createAsyncThunk(

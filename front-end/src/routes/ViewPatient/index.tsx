@@ -190,7 +190,6 @@ const ViewPatient = () => {
                                 <p>:</p>
                                 <p>{ user.data.phone }</p>
                             </SubContent>
-
                         </Col>
                         
                         <ImageDiv>

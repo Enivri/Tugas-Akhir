@@ -6,9 +6,13 @@ import Row from 'react-bootstrap/Row';
 export const Wrapper = styled.div`
 `
 export const Report = styled.div`
-    width: 80vw;
+    width: 50vw;
     margin: 0 auto;
     margin-top: 100px;
+
+    @media screen and (max-width: 480px) {
+    width: 80vw;
+}
 `
 export const ReportTitle = styled.div`
     display: flex;
@@ -47,6 +51,10 @@ export const Pasfoto = styled.img`
     width: 200px;
     aspect-ratio: 1;
     float: center;
+        
+    @media screen and (max-width: 480px) {
+        width: 150px;
+    }
 `
 export const Content= styled.div`
     margin-left: 30px;
@@ -70,7 +78,7 @@ export const PagePosition = styled.div`
 `
 export const Eyes = styled.div`
     display: flex;
-    gap: 4rem;
+    gap: 2rem;
     margin-bottom: 30px;
 `
 export const EyesCard = styled.div`

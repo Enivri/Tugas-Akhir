@@ -47,6 +47,10 @@ export const Pasfoto = styled.img`
     width: 200px;
     aspect-ratio: 1;
     float: center;
+        
+    @media screen and (max-width: 480px) {
+        width: 150px;
+    }
 `
 export const Content= styled.div`
     margin-left: 30px;
@@ -70,7 +74,7 @@ export const PagePosition = styled.div`
 `
 export const Eyes = styled.div`
     display: flex;
-    gap: 4rem;
+    gap: 2rem;
     margin-bottom: 30px;
 `
 export const EyesCard = styled.div`

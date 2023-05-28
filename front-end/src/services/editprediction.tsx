@@ -12,16 +12,12 @@ export interface EditPredictionParams {
     nik: string
     right_eye_pic?: File
     left_eye_pic?: File
-    right_eye_cond: string
-    left_eye_cond: string
 }
 
 interface EditPredictionRequest {
     nik: string
     right_eye_pic?: string
     left_eye_pic?: string
-    right_eye_cond: string
-    left_eye_cond: string
 }
 
 export const EditPredictionService = createAsyncThunk(
@@ -39,8 +35,6 @@ export const EditPredictionService = createAsyncThunk(
                 nik: params.nik,
                 right_eye_pic: right_eye_pic_url,
                 left_eye_pic: left_eye_pic_url,
-                right_eye_cond: params.right_eye_cond,
-                left_eye_cond: params.left_eye_cond,
             }
 
             await api.put(

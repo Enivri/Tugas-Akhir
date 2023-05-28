@@ -6,11 +6,14 @@ import Row from 'react-bootstrap/Row';
 export const Wrapper = styled.div`
 `
 export const Report = styled.div`
-    /* border: 1px solid grey;
-    border-radius: 30px; */
-    width: 80vw;
+    width: 30vw;
     margin: 0 auto;
     margin-top: 100px;
+
+    @media screen and (max-width: 480px) {
+    width: 80vw;
+}
+    
 `
 export const ReportTitle = styled.div`
     display: flex;
@@ -31,7 +34,6 @@ export const Group = styled(Form.Group)`
 export const SubContent= styled.div`
     margin-left: 30px;
     display: flex;
-    
 `
 export const SubTitle = styled.div`
     margin-bottom: 10px;
@@ -45,15 +47,19 @@ export const ImageDiv = styled(Col)`
     display: flex;
     justify-content: center;
 `
-
-export const Pasfoto = styled.img`
+    export const Pasfoto = styled.img`
     width: 200px;
     aspect-ratio: 1;
     float: center;
+    
+    @media screen and (max-width: 480px) {
+        width: 150px;
+    }
 `
 export const Content= styled.div`
-    margin-left: 30px;
     margin-top: 30px;
+    display: flex;
+    flex-direction: column;
 `
 export const Kode= styled.div`
 `
@@ -73,13 +79,14 @@ export const PagePosition = styled.div`
 `
 export const Eyes = styled.div`
     display: flex;
-    /* gap: 4rem; */
+    gap: 2rem;
     margin-bottom: 30px;
+    justify-content: center;
 `
 export const EyesCard = styled.div`
     display: flex;
     flex-direction: column;
     align-items: center;
-    margin-right: 30px;
+    /* margin-right: 30px; */
 `
 

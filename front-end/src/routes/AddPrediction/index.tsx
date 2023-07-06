@@ -1,14 +1,16 @@
-import React, { ChangeEvent, useState } from 'react'
+import React, { ChangeEvent, useEffect, useState } from 'react'
 import { Wrapper, Title, Report, ReportTitle, Label, Control, Group, Content, SubTitle, Bottom, SubmitBTN, CancelBTN, Eye, EyeBox, GroupEye, Formx } from './AddPrediction.styles'
 import Row from 'react-bootstrap/Row';
 import { useAppDispatch } from '@store';
-import { useNavigate } from 'react-router-dom';
+import { generatePath, useNavigate } from 'react-router-dom';
 import { CreatePredictionRequest, CreatePredictionService } from '@services/createprediction';
 import { statusActions } from '@store/status';
 import InputFile from '@components/InputFile';
+import endpoints from '@constants/routes/admin';
+import { usePermission } from '@hooks/usePermission';
 
 const AddPrediction = () => {
-
+    const CreatePrediction = usePermission("Create Prediction")
     const dispatch = useAppDispatch()
     const navigate = useNavigate()
 
@@ -20,14 +22,16 @@ const AddPrediction = () => {
     
 
     const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-        e.preventDefault()
-        try{
-            await dispatch(CreatePredictionService(createPredictionRequest)).unwrap()
-            navigate("/prediction")
+        if(CreatePrediction) {
+            e.preventDefault()
+            try{
+                await dispatch(CreatePredictionService(createPredictionRequest)).unwrap()
+                navigate(generatePath(endpoints.prediction))
 
-        } catch(err) {
-            alert((err as Error).message)
-            dispatch(statusActions.setError((err as Error).message))
+            } catch(err) {
+                alert((err as Error).message)
+                dispatch(statusActions.setError((err as Error).message))
+            }
         }
     }
 
@@ -64,6 +68,14 @@ const AddPrediction = () => {
         }
     }
 
+    useEffect(() => {
+        if (!CreatePrediction) {
+            const credentials = JSON.parse(localStorage.getItem("credentials") || "")
+            const isPatient = credentials.accesses?.some((access: string) => access === "Patient")
+            navigate(isPatient ? generatePath(endpoints.dashboard) : generatePath(endpoints.home))
+        }
+    }, [CreatePrediction])
+
     const onDelete = (e: React.MouseEvent<Element, MouseEvent>) => {
         const { id } = e.currentTarget
 
@@ -85,10 +97,10 @@ const AddPrediction = () => {
 
     return (
         <Wrapper>
-            <Title>Add New Prediction</Title>
+            <Title>Buat Prediksi Baru</Title>
             
             <Report>
-                <ReportTitle>Prediction Form</ReportTitle>
+                <ReportTitle>Form Prediksi</ReportTitle>
 
                 <Content className='my-3'>
                         <SubTitle>Identitas Pasien</SubTitle>
@@ -126,8 +138,8 @@ const AddPrediction = () => {
                         </Row>
 
                         <Bottom>
-                            <CancelBTN to="/prediction">Cancel</CancelBTN>
-                            <SubmitBTN type="submit">Submit</SubmitBTN>
+                            <CancelBTN to={generatePath(endpoints.prediction)}>Batal</CancelBTN>
+                            <SubmitBTN type="submit">Kirim</SubmitBTN>
                         </Bottom>
                         </Formx>
                 </Content>

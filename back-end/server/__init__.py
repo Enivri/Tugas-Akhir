@@ -17,7 +17,7 @@ load_dotenv()
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URI')
 app.config['SECRET_KEY']='004f2af45d3a4e161a7dd2d17fdae47f'
-app.config["ML_MODEL"] = load_model(os.path.join(os.getcwd(), "MachineLearning.h5"))
+app.config["ML_MODEL"] = load_model(os.path.join(os.getcwd(), "MachineLearning3.h5"))
 app.config["ML_THRESHOLD"] = 0
 
 cloudinary.config(
@@ -29,9 +29,28 @@ db = SQLAlchemy(app)
 bcrypt = Bcrypt(app)
 CORS(app)
 
-
 seeder = FlaskSeeder()
 seeder.init_app(app, db)
+
+# decorator for checking user role
+def role_required(roles):
+    def check_role(f):
+        @wraps(f)
+        def decorated(*args, **kwargs):
+            # available roles
+            role_availables = ['admin', 'doctor', 'patient']
+            
+            # filtering the role availables
+            accepted = [role_available for role_available in role_availables for role in roles if role == role_available]
+            
+            # allow if currrent user role is in accepted roles else abort 403 (unauthorized)
+            user = models.user.User.query.filter_by(id = kwargs["data"]["id"]).first()
+
+            if user is None:
+                return abort(404)
+            return f(*args, **kwargs) if user.role.value in accepted else abort(403)
+        return decorated    
+    return check_role
 
 def token_required(f):
     @wraps(f)
@@ -40,16 +59,15 @@ def token_required(f):
         if 'Authorization' in request.headers:
             token = request.headers['Authorization']
             token = token.split(" ")[1]
-
         if not token:
             return jsonify({'message': 'a valid token is missing'})
         try:
             data = jwt.decode(token, app.config['SECRET_KEY'], algorithms=["HS256"])
-            print(data)
+            kwargs["data"] = data
         except:
             return jsonify({'message': 'token is invalid'})
 
-        return f(data, *args, **kwargs)
+        return f(*args, **kwargs)
     return decorator
 
 @app.route("/upload", methods=['POST'])
@@ -67,4 +85,5 @@ def upload_file():
 import models
 
 import controller
+
 

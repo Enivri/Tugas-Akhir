@@ -55,6 +55,7 @@ export const SignInForm = styled.form`
     align-items: center;
     @media screen and (max-width: 480px) {
     z-index: 100;
+    width: 85%;
 }
 `
 export const SignInTitle = styled.h2`

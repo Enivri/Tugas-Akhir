@@ -14,6 +14,7 @@ class CheckUp(db.Model):
     patient_id = db.Column(db.Integer, db.ForeignKey(User.id))
     user = db.relationship("User", foreign_keys=[patient_id])
     doctor_id = db.Column(db.Integer, db.ForeignKey(User.id))
+    doctor = db.relationship("User", foreign_keys=[doctor_id])
     operation_id = db.Column(db.Integer, db.ForeignKey(Operation.id))
     operation = db.relationship("Operation")
     right_eye_pic = db.Column(db.String())

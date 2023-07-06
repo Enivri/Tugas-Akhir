@@ -33,10 +33,8 @@ export const CreatePredictionService = createAsyncThunk(
 
             const response = await api.post(
                 endpoints.createprediction,
-                {
-                    ...request,
-                    ...authHeader('application/json')
-                }
+                request, 
+                authHeader("application/json"),
             )
             const data = (response.data as Prediction)
             return data

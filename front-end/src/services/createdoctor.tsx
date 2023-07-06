@@ -34,10 +34,8 @@ export const CreateDoctorService = createAsyncThunk(
 
             const response = await api.post(
                 endpoints.createdoctor,
-                {
-                    ...request,
-                    ...authHeader('application/json')
-                }
+                request, 
+                authHeader("application/json"),
             )
             const data = (response.data as User)
             return data

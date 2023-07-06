@@ -8,7 +8,7 @@ import { upload } from "./upload"
 import { CheckUp } from "@models/CheckUp"
 
 export interface CreateCheckUpRequest {
-    code: string
+    operation_code: string
     right_eye_pic?: File
     left_eye_pic?: File
     description: string
@@ -33,10 +33,8 @@ export const CreateCheckUpService = createAsyncThunk(
 
             const response = await api.post(
                 endpoints.createcheckup,
-                {
-                    ...request,
-                    ...authHeader('application/json')
-                }
+                request, 
+                authHeader("application/json"),
             )
             const data = (response.data as CheckUp)
             return data

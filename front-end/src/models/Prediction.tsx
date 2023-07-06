@@ -8,5 +8,5 @@ export type Prediction = {
     right_eye_cond: string
     left_eye_cond: string
     created_at: string
-    user: User
+    user?: User
 }

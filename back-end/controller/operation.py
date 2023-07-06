@@ -1,6 +1,6 @@
 from flask import request, abort
 from flask_cors import CORS, cross_origin
-from server import app, db, token_required
+from server import app, db, token_required, role_required
 from models.operation import Operation
 from models.diagnosis import Diagnosis
 from models.user import User
@@ -9,10 +9,11 @@ from sqlalchemy import or_
 @app.route("/api/v1/operation", methods=["POST"])
 @token_required
 @cross_origin()
+@role_required(["admin", "doctor"])
 def create_operation(data):
     body = request.get_json()
-    code = body["diagnosis_code"]
-    diagnosis = Diagnosis.query.filter_by(code=code).first()
+    diagnosis_code = body["diagnosis_code"]
+    diagnosis = Diagnosis.query.filter_by(code=diagnosis_code).first()
     if diagnosis is None:
         return abort(404, "user not found")
     patient_id = diagnosis.patient_id
@@ -46,17 +47,19 @@ def create_operation(data):
     
     return response
 
-@app.route("/api/v1/operation/<int:id>", methods=["PUT", "DELETE", "GET"])
+@app.route("/api/v1/operation/<int:id>", methods=["PUT"])
+@token_required
 @cross_origin()
-def by_id_operation(id):
+@role_required(["admin"])
+def update_operation(data, id):
     operation = Operation.query.filter_by(id=id).first()
     if operation is None:
         return abort(404, "Operation Not Found")
 
     if request.method == "PUT":
         body = request.get_json()
-        code = body["diagnosis_code"]
-        diagnosis = Diagnosis.query.filter_by(code=code).first()
+        diagnosis_code = body["diagnosis_code"]
+        diagnosis = Diagnosis.query.filter_by(code=diagnosis_code).first()
         if diagnosis is None:
             return abort(404, "user not found")
         patient_id = diagnosis.patient_id
@@ -93,11 +96,29 @@ def by_id_operation(id):
 
         return response
 
+@app.route("/api/v1/operation/<int:id>", methods=["DELETE"])
+@token_required
+@cross_origin()
+@role_required(["admin"])
+def delete_operation(data, id):
+    operation = Operation.query.filter_by(id=id).first()
+    if operation is None:
+        return abort(404, "Operation Not Found")
+
     if request.method == "DELETE":
         db.session.delete(operation)
         db.session.commit()
 
         return "Operation has been deleted"
+
+@app.route("/api/v1/operation/<int:id>", methods=["GET"])
+@token_required
+@cross_origin()
+@role_required(["admin", "doctor"])
+def get_operation_detail(data, id):
+    operation = Operation.query.filter_by(id=id).first()
+    if operation is None:
+        return abort(404, "Operation Not Found")
 
     if request.method == "GET":
         response = {
@@ -137,15 +158,30 @@ def by_id_operation(id):
                 "left_eye_cond":operation.diagnosis.left_eye_cond,
                 "description": operation.diagnosis.description,
                 "created_at": operation.diagnosis.created_at
-                }
+                },
+            "doctor": {
+                "id": operation.doctor.id,
+                "name": operation.doctor.name,
+                "nik": operation.doctor.nik,
+                "email": operation.doctor.email,
+                "town": operation.doctor.town,
+                "gender": operation.doctor.gender.value,
+                "birth_date": operation.doctor.birth_date,
+                "phone": operation.doctor.phone,
+                "picture": operation.doctor.picture,
+                "role": operation.doctor.role.value,
+                "created_at": operation.doctor.created_at,
+                },
             }
         }
 
         return response
 
 @app.route("/api/v1/operation", methods=["GET"])
+@token_required
 @cross_origin()
-def get_all_operation():
+@role_required(["admin", "doctor"])
+def get_all_operation(data):
     args = request.args
     patient_id = args.get("patient_id")
     doctor_id = args.get("doctor_id")

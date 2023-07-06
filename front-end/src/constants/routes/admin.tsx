@@ -3,6 +3,8 @@ export default {
     login: "/login",
     signup: "/signup",
     home: "/home",
+    dashboard:"/dashboard",
+    addtrial:"/trial",
     patient: "/patient",
     addpatient: "/addpatient",
     viewpatient: "/patient/:userId",

@@ -1,8 +1,10 @@
 export default {
     login: '/api/v1/login',
+    signup: '/api/v1/signup',
     createpatient: '/api/v1/users',
     createdoctor: '/api/v1/doctor',
     createprediction: '/api/v1/prediction',
+    createtrial: '/api/v1/trial',
     creatediagnosis: '/api/v1/diagnosis',
     createoperation: '/api/v1/operation',
     createcheckup: '/api/v1/checkUp',
@@ -12,6 +14,7 @@ export default {
     editoperation: '/api/v1/operation/:operationId',
     editcheckup: '/api/v1/checkUp/:checkupId',
     userlist: '/api/v1/users',
+    patientpredictionlist: '/api/v1/patient/prediction',
     predictionlist: '/api/v1/prediction',
     diagnosislist: '/api/v1/diagnosis',
     operationlist: '/api/v1/operation',

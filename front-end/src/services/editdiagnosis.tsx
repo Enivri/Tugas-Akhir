@@ -51,10 +51,8 @@ export const EditDiagnosisService = createAsyncThunk(
 
             await api.put(
                 generatePath(endpoints.editdiagnosis, {diagnosisId: params.diagnosisId}),
-                {
-                    ...request,
-                    ...authHeader('application/json'),
-                }
+                request, 
+                authHeader("application/json"),
                 // request,
             )
         } catch (err) {

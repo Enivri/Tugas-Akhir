@@ -31,6 +31,7 @@ export const ReportTitle = styled.div`
     margin-top: 10px;
 `
 export const Label = styled(Form.Label)`
+
 `
 export const Control = styled(Form.Control)`
     width: 20vw;

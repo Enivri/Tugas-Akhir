@@ -8,7 +8,7 @@ import { upload } from "./upload"
 import { Operation } from "@models/Operation"
 
 export interface CreateOperationRequest {
-    code: string
+    diagnosis_code: string
     right_eye_pic?: File
     left_eye_pic?: File
     result: string
@@ -34,10 +34,8 @@ export const CreateOperationService = createAsyncThunk(
 
             const response = await api.post(
                 endpoints.createoperation,
-                {
-                    ...request,
-                    ...authHeader('application/json')
-                }
+                request, 
+                authHeader("application/json"),
             )
             const data = (response.data as Operation)
             return data

@@ -10,6 +10,7 @@ interface Request {
 interface Response {
     name: string
     token: string
+    accesses: string[]
 }
 
 export const login = createAsyncThunk(

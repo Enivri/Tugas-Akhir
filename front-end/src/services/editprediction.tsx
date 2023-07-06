@@ -39,10 +39,8 @@ export const EditPredictionService = createAsyncThunk(
 
             await api.put(
                 generatePath(endpoints.editprediction, {predictionId: params.predictionId}),
-                {
-                    ...request,
-                    ...authHeader('application/json'),
-                }
+                request, 
+                authHeader("application/json"),
                 // request,
             )
         } catch (err) {

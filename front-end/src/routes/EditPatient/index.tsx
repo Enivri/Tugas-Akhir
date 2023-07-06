@@ -3,18 +3,20 @@ import { Wrapper, Title, Report, ReportTitle, Label, Control, Group, Content, Su
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import { useAppDispatch } from '@store';
-import { useNavigate, useParams } from 'react-router-dom';
+import { generatePath, useNavigate, useParams } from 'react-router-dom';
 import { EditUserParams, EditUserService } from '@services/edituser';
 import { statusActions } from '@store/status';
 import { GetUserService, Response } from '@services/viewuser';
 import endpoints from "@constants/routes/admin"
 import InputFile from '@components/InputFile';
+import { usePermission } from '@hooks/usePermission';
 
 type Params = {
     userId: string
 }
 
 const EditPatient = () => {
+    const UpdateUser = usePermission("Update User")
     const [user, setUser] = useState<Response>({
         data: {
             id: 0,
@@ -74,8 +76,10 @@ const EditPatient = () => {
                 dispatch(statusActions.setError((err as Error).message))
             }
         }
-        fetchData()
-    }, [dispatch])
+        if (UpdateUser) {
+            fetchData()
+        }
+    }, [dispatch, UpdateUser])
 
     const [editUserRequest, setEditUserRequest] = useState<EditUserParams>({
         userId: "",
@@ -94,7 +98,7 @@ const EditPatient = () => {
         e.preventDefault()
         try{
             await dispatch(EditUserService(editUserRequest)).unwrap()
-            navigate(endpoints.doctor)
+            navigate(endpoints.patient)
 
         } catch(err) {
             dispatch(statusActions.setError((err as Error).message))
@@ -141,12 +145,20 @@ const EditPatient = () => {
         }
     }
 
+    useEffect(() => {
+        if (!UpdateUser) {
+            const credentials = JSON.parse(localStorage.getItem("credentials") || "")
+            const isPatient = credentials.accesses?.some((access: string) => access === "Patient")
+            navigate(isPatient ? generatePath(endpoints.dashboard) : generatePath(endpoints.home))
+        }
+    }, [UpdateUser])
+
     return (
         <Wrapper>
-            <Title>Edit Patient</Title>
+            <Title>Edit Pasien</Title>
             
             <Report>
-                <ReportTitle>Patient Form</ReportTitle>
+                <ReportTitle>Form pasien</ReportTitle>
 
                 <Content className='my-3'>
                         <SubTitle>Identitas Pasien</SubTitle>
@@ -203,8 +215,8 @@ const EditPatient = () => {
                             </Row>
 
                         <Bottom>
-                            <CancelBTN to="/patient">Cancel</CancelBTN>
-                            <SubmitBTN type="submit">Submit</SubmitBTN>
+                            <CancelBTN to={generatePath(endpoints.patient)}>Batal</CancelBTN>
+                            <SubmitBTN type="submit">Kirim</SubmitBTN>
                         </Bottom>
                         </Formx>
                 </Content>

@@ -4,18 +4,20 @@ import Row from 'react-bootstrap/Row';
 import { useEffect, useState } from 'react';
 import { useAppDispatch } from '@store';
 import { statusActions } from '@store/status';
-import { useNavigate, useParams } from 'react-router-dom';
+import { generatePath, useNavigate, useParams } from 'react-router-dom';
 import endpoints from "@constants/routes/admin"
 import InputFile from '@components/InputFile';
 import { Operation } from '@models/Operation';
 import { EditOperationParams, EditOperationService } from '@services/editoperation';
 import { GetOperationService } from '@services/viewoperation';
+import { usePermission } from '@hooks/usePermission';
 
 type Params = {
     operationId: string
 }
 
     const EditOperation= () => {
+        const UpdateOperation = usePermission("Update Operation")
         const [operation, setOperation] = useState<Operation>({
             id: 0,
             patient_id: 0,
@@ -27,77 +29,16 @@ type Params = {
             result:"",
             description:"",
             created_at: "",
-            user: {
-                id: 0,
-                name: "",
-                nik: "",
-                email: "",
-                password: "string",
-                town: "",
-                gender: "",
-                birth_date: "",
-                phone: "",
-                picture: "",
-                role: "",
-                created_at: "",
-                },
-            diagnosis:{
-                id: 0,
-                patient_id: 0,
-                doctor_id:0,
-                prediction_id: 0,
-                code: "",
-                right_eye_pic: "",
-                left_eye_pic: "",
-                right_eye_cond: "",
-                left_eye_cond:"",
-                description:"",
-                created_at: "",
-                user: {
-                    id: 0,
-                    name: "",
-                    nik: "",
-                    email: "",
-                    password: "string",
-                    town: "",
-                    gender: "",
-                    birth_date: "",
-                    phone: "",
-                    picture: "",
-                    role: "",
-                    created_at: "",
-                    },
-                prediction:{
-                    id: 0,
-                    patient_id: 0,
-                    user: {
-                        id: 0,
-                        name: "",
-                        nik: "",
-                        email: "",
-                        password: "string",
-                        town: "",
-                        gender: "",
-                        birth_date: "",
-                        phone: "",
-                        picture: "",
-                        role: "",
-                        created_at: "",
-                        },
-                    right_eye_pic: "",
-                    left_eye_pic: "",
-                    right_eye_cond: "",
-                    left_eye_cond:"",
-                    created_at: ""
-                }
-            }  
+            user: undefined,
+            diagnosis: undefined,
             },)
 
             const [editOperationRequest, setEditOperationRequest] = useState<EditOperationParams>({
                 operationId:0,
                 patient_id: 0,
                 diagnosis_id: 0,
-                code: "",
+                diagnosis_code: "",
+                code:"",
                 right_eye_pic: undefined,
                 left_eye_pic: undefined,
                 result: "",
@@ -135,7 +76,7 @@ type Params = {
                         setEditOperationRequest((prev) => ({
                             ...prev,
                             operationId: responseData.id,
-                            code: responseData.diagnosis.code,
+                            diagnosis_code: responseData.diagnosis?.code ?? "",
                             patient_id: responseData.patient_id,
                             diagnosis_id: responseData.diagnosis_id,
                             right_eye_pic: right_eye_pic ,
@@ -148,8 +89,10 @@ type Params = {
                     dispatch(statusActions.setError((err as Error).message))
                 }
             }
-            fetchData()
-        }, [dispatch])      
+            if (UpdateOperation) {
+                fetchData()
+            }
+        }, [dispatch, UpdateOperation])   
     
         const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
             e.preventDefault()
@@ -214,19 +157,27 @@ type Params = {
             }
         }
 
+        useEffect(() => {
+            if (!UpdateOperation) {
+                const credentials = JSON.parse(localStorage.getItem("credentials") || "")
+                const isPatient = credentials.accesses?.some((access: string) => access === "Patient")
+                navigate(isPatient ? generatePath(endpoints.dashboard) : generatePath(endpoints.home))
+            }
+        }, [UpdateOperation])
+
     return (
         <Wrapper>
-            <Title>Edit Operation</Title>
+            <Title>Edit Operasi</Title>
             
             <Report>
-                <ReportTitle>Operation Form</ReportTitle>
+                <ReportTitle>Form Operasi</ReportTitle>
 
                 <Content className='my-3'>
                         <Formx onSubmit = {onSubmit}>
                         <Row>                      
                                 <Group>
-                                    <Label>Diagnosis Code</Label>
-                                    <Control type="text" placeholder="Code"  id="code" value={editOperationRequest.code} onChange={onChange}/>
+                                    <Label>Kode Diagnosa</Label>
+                                    <Control type="text" placeholder="Kode"  id="diagnosis_code" value={editOperationRequest.diagnosis_code} onChange={onChange}/>
                                 </Group>
 
                                 <Eye>
@@ -254,17 +205,17 @@ type Params = {
                                 </Eye>
 
                                 <Group>
-                                    <Label>Result</Label>
+                                    <Label>Hasil</Label>
                                     <Control type="text" placeholder="Successful/Unsuccessful"  id="result" value={editOperationRequest.result} onChange={onChange}/>
                                 </Group>
                             
-                            <Label>Description</Label>
+                            <Label>Deskripsi</Label>
                             <Desc placeholder="Type here" id="description" value={editOperationRequest.description} onChange={onChange}/>
                         </Row>
 
                         <Bottom>
-                            <CancelBTN to="/operation">Cancel</CancelBTN>
-                            <SubmitBTN type="submit">Submit</SubmitBTN>
+                            <CancelBTN to={generatePath(endpoints.operation)}>Batal</CancelBTN>
+                            <SubmitBTN type="submit">Kirim</SubmitBTN>
                         </Bottom>
                         </Formx>
                 </Content>

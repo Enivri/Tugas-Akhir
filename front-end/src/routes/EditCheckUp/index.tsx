@@ -4,18 +4,20 @@ import Row from 'react-bootstrap/Row';
 import { useEffect, useState } from 'react';
 import { useAppDispatch } from '@store';
 import { statusActions } from '@store/status';
-import { useNavigate, useParams } from 'react-router-dom';
+import { generatePath, useNavigate, useParams } from 'react-router-dom';
 import endpoints from "@constants/routes/admin"
 import InputFile from '@components/InputFile';
 import { CheckUp } from '@models/CheckUp';
 import { EditCheckUpParams, EditCheckUpService } from '@services/editcheckup';
 import { GetCheckUpService } from '@services/viewcheckup';
+import { usePermission } from '@hooks/usePermission';
 
 type Params = {
     checkupId: string
 }
 
     const EditCheckUp = () => {
+        const UpdateCheckUp = usePermission("Update CheckUp")
         const [checkup, setCheckUp] = useState<CheckUp>({
             id: 0,
             patient_id: 0,
@@ -33,7 +35,7 @@ type Params = {
                 checkupId:0,
                 patient_id: 0,
                 operation_id: 0,
-                code: "",
+                operation_code: "",
                 right_eye_pic: undefined,
                 left_eye_pic: undefined,
                 description: "",
@@ -70,7 +72,7 @@ type Params = {
                         setEditCheckUpRequest((prev) => ({
                             ...prev,
                             checkupId: responseData.id,
-                            code: responseData.operation?.code ?? "",
+                            operation_code: responseData.operation?.code ?? "",
                             patient_id: responseData.patient_id,
                             operation_id: responseData.operation_id,
                             right_eye_pic: right_eye_pic ,
@@ -82,8 +84,10 @@ type Params = {
                     dispatch(statusActions.setError((err as Error).message))
                 }
             }
-            fetchData()
-        }, [dispatch])      
+            if (UpdateCheckUp) {
+                fetchData()
+            }
+        }, [dispatch, UpdateCheckUp])    
     
         const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
             e.preventDefault()
@@ -148,19 +152,27 @@ type Params = {
             }
         }
 
+        useEffect(() => {
+            if (!UpdateCheckUp) {
+                const credentials = JSON.parse(localStorage.getItem("credentials") || "")
+                const isPatient = credentials.accesses?.some((access: string) => access === "Patient")
+                navigate(isPatient ? generatePath(endpoints.dashboard) : generatePath(endpoints.home))
+            }
+        }, [UpdateCheckUp])
+
     return (
         <Wrapper>
-            <Title>Edit CheckUp</Title>
+            <Title>Edit Checkup</Title>
             
             <Report>
-                <ReportTitle>CheckUp Form</ReportTitle>
+                <ReportTitle>Form Check Up</ReportTitle>
 
                 <Content className='my-3'>
                         <Formx onSubmit = {onSubmit}>
                         <Row>                     
                                 <Group>
-                                <Label>Operation Code</Label>
-                                    <Control type="text" placeholder="Code"  id="code" value={editCheckUpRequest.code} onChange={onChange}/>
+                                <Label>Kode Operasi</Label>
+                                    <Control type="text" placeholder="Kode"  id="code" value={editCheckUpRequest.operation_code} onChange={onChange}/>
                                 </Group>
 
                                 <Eye>
@@ -187,13 +199,13 @@ type Params = {
                                     </EyeBox> 
                                 </Eye>
 
-                            <Label>Description</Label>
+                            <Label>Deskripsi</Label>
                             <Desc placeholder="Type here" id="description" value={editCheckUpRequest.description} onChange={onChange}/>
                         </Row>
 
                         <Bottom>
-                            <CancelBTN to="/checkup">Cancel</CancelBTN>
-                            <SubmitBTN type="submit">Submit</SubmitBTN>
+                            <CancelBTN to={generatePath(endpoints.checkup)}>Batal</CancelBTN>
+                            <SubmitBTN type="submit">Kirim</SubmitBTN>
                         </Bottom>
                         </Formx>
                 </Content>

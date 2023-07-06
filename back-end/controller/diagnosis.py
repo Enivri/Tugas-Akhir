@@ -1,5 +1,5 @@
 from flask import request, abort
-from server import app, db, token_required
+from server import app, db, token_required, role_required
 from flask_cors import CORS, cross_origin
 from models.diagnosis import Diagnosis
 from models.prediction import Prediction
@@ -9,6 +9,7 @@ from sqlalchemy import or_
 @app.route("/api/v1/diagnosis", methods=["POST"])
 @token_required
 @cross_origin()
+@role_required(["admin", "doctor"])
 def create_diagnosis(data):
     body = request.get_json()
     nik= body["nik"]
@@ -48,9 +49,11 @@ def create_diagnosis(data):
     
     return response
 
-@app.route("/api/v1/diagnosis/<int:id>", methods=["PUT", "DELETE", "GET"])
+@app.route("/api/v1/diagnosis/<int:id>", methods=["PUT"])
+@token_required
 @cross_origin()
-def by_id_diagnosis(id):
+@role_required(["admin"])
+def update_diagnosis(data, id):
     diagnosis = Diagnosis.query.filter_by(id=id).first()
     if diagnosis is None:
         return abort(404, "Diagnosis Not Found")
@@ -62,8 +65,6 @@ def by_id_diagnosis(id):
         if user is None:
             return abort(404, "user not found")
         patient_id = user.id
-        doctor_id = body["doctor_id"]
-        prediction_id = body["prediction_id"]
         right_eye_pic = body["right_eye_pic"]
         left_eye_pic = body["left_eye_pic"]
         right_eye_cond = body["right_eye_cond"]
@@ -71,8 +72,6 @@ def by_id_diagnosis(id):
         description = body["description"]
         
         diagnosis.patient_id = patient_id
-        diagnosis.doctor_id = doctor_id
-        diagnosis.prediction_id = prediction_id
         diagnosis.right_eye_pic = right_eye_pic
         diagnosis.left_eye_pic = left_eye_pic
         diagnosis.right_eye_cond = right_eye_cond
@@ -100,17 +99,52 @@ def by_id_diagnosis(id):
 
         return response
 
+@app.route("/api/v1/diagnosis/<int:id>", methods=["DELETE"])
+@token_required
+@cross_origin()
+@role_required(["admin"])
+def delete_diagnosis(data, id):
+    diagnosis = Diagnosis.query.filter_by(id=id).first()
+    if diagnosis is None:
+        return abort(404, "Diagnosis Not Found")
+
     if request.method == "DELETE":
         db.session.delete(diagnosis)
         db.session.commit()
 
         return "Diagnosis has been deleted"
 
+@app.route("/api/v1/diagnosis/<int:id>", methods=["GET"])
+@token_required
+@cross_origin()
+@role_required(["admin", "doctor"])
+def get_diagnosis_detail(data, id):
+    diagnosis = Diagnosis.query.filter_by(id=id).first()
+    if diagnosis is None:
+        return abort(404, "Diagnosis Not Found")
+
     if request.method == "GET":
         response = {
         "data":{
             "id": diagnosis.id,
             "patient_id": diagnosis.patient_id,
+            "doctor_id": diagnosis.doctor_id,
+            "prediction_id": diagnosis.prediction_id,
+            "code": diagnosis.code,
+            "right_eye_pic": diagnosis.right_eye_pic,
+            "left_eye_pic": diagnosis.left_eye_pic,
+            "right_eye_cond": diagnosis.right_eye_cond,
+            "left_eye_cond":diagnosis.left_eye_cond,
+            "description": diagnosis.description,
+            "created_at": diagnosis.created_at,
+            "prediction": {
+                "id": diagnosis.prediction.id,
+                "patient_id": diagnosis.prediction.patient_id,
+                "right_eye_pic": diagnosis.prediction.right_eye_pic,
+                "left_eye_pic": diagnosis.prediction.left_eye_pic,
+                "right_eye_cond": diagnosis.prediction.right_eye_cond,
+                "left_eye_cond": diagnosis.prediction.left_eye_cond,
+                },
             "user": {
                 "id": diagnosis.user.id,
                 "name": diagnosis.user.name,
@@ -124,31 +158,29 @@ def by_id_diagnosis(id):
                 "role": diagnosis.user.role.value,
                 "created_at": diagnosis.user.created_at,
                 },
-            "doctor_id": diagnosis.doctor_id,
-            "prediction_id": diagnosis.prediction_id,
-            "prediction": {
-                "id": diagnosis.prediction.id,
-                "patient_id": diagnosis.prediction.patient_id,
-                "right_eye_pic": diagnosis.prediction.right_eye_pic,
-                "left_eye_pic": diagnosis.prediction.left_eye_pic,
-                "right_eye_cond": diagnosis.prediction.right_eye_cond,
-                "left_eye_cond": diagnosis.prediction.left_eye_cond,
+            "doctor": {
+                "id": diagnosis.doctor.id,
+                "name": diagnosis.doctor.name,
+                "nik": diagnosis.doctor.nik,
+                "email": diagnosis.doctor.email,
+                "town": diagnosis.doctor.town,
+                "gender": diagnosis.doctor.gender.value,
+                "birth_date": diagnosis.doctor.birth_date,
+                "phone": diagnosis.doctor.phone,
+                "picture": diagnosis.doctor.picture,
+                "role": diagnosis.doctor.role.value,
+                "created_at": diagnosis.doctor.created_at,
                 },
-            "code": diagnosis.code,
-            "right_eye_pic": diagnosis.right_eye_pic,
-            "left_eye_pic": diagnosis.left_eye_pic,
-            "right_eye_cond": diagnosis.right_eye_cond,
-            "left_eye_cond":diagnosis.left_eye_cond,
-            "description": diagnosis.description,
-            "created_at": diagnosis.created_at
             }
         }
 
         return response
 
 @app.route("/api/v1/diagnosis", methods=["GET"])
+@token_required
 @cross_origin()
-def get_all_diagnosis():
+@role_required(["admin", "doctor"])
+def get_all_diagnosis(data):
     args = request.args
     patient_id = args.get("patient_id")
     doctor_id = args.get("doctor_id")

@@ -13,10 +13,12 @@ const CodeCardComponent: React.FC<CardParams> = ({code, date, viewlink}) => {
     <Wrapper>
     <CodeCard to={viewlink}>
         <Content>
-            <Code>{code}</Code>
             <Date>
-            {date}
+                {date}
             </Date>
+            <Code>
+                {code}
+            </Code>
         </Content>
     </CodeCard>
     </Wrapper>

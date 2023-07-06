@@ -3,7 +3,8 @@ import { Wrapper, BackgroundImage, Content, Title, SignInForm, SignInTitle, Sign
 import Image from '@assets/background.jpg'
 import { login } from '@services/login'
 import { useAppDispatch } from '@store'
-import { useNavigate } from 'react-router-dom'
+import { generatePath, useNavigate } from 'react-router-dom'
+import endpoints from '@constants/routes/admin';
 
 
 const Login = () => {
@@ -27,8 +28,11 @@ const Login = () => {
         try{
             const res = await dispatch(login(form)).unwrap()
 
-            if (res) localStorage.setItem("credentials", JSON.stringify(res))
-            navigate('/home')
+            if (res) {
+                localStorage.setItem("credentials", JSON.stringify(res))
+                const isPatient = res.accesses?.some((access: string) => access === "Patient")
+                navigate(isPatient ? generatePath(endpoints.dashboard) : generatePath(endpoints.home))
+            }
         } catch(err) {
             alert(err)
         }
@@ -48,7 +52,7 @@ const Login = () => {
                         <TextInput type="password" name="password" placeholder="Password" value={form.password} onChange={onChange} />
                     </Label>
                     <SignInButton type="submit" variant="primary">SIGN IN</SignInButton>    
-                    <SignUpButton to="/signup">SIGN UP</SignUpButton>    
+                    <SignUpButton to={generatePath(endpoints.signup)}>SIGN UP</SignUpButton>    
                 </SignInForm>
             </Content>
         </Wrapper>

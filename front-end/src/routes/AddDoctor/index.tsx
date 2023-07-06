@@ -1,15 +1,17 @@
 import { Wrapper, Title, Report, ReportTitle, Label, Control, Group, Content, SubTitle, Bottom, SubmitBTN, CancelBTN, Formx } from './AddDoctor.styles'
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
-import React, { ChangeEvent, useState } from 'react'
+import React, { ChangeEvent, useEffect, useState } from 'react'
 import { useAppDispatch } from '@store'
-import { useNavigate } from 'react-router-dom'
+import { generatePath, useNavigate } from 'react-router-dom'
 import { statusActions } from '@store/status';
 import InputFile from '@components/InputFile';
 import { CreateDoctorRequest, CreateDoctorService } from '@services/createdoctor';
+import endpoints from "@constants/routes/admin"
+import { usePermission } from '@hooks/usePermission';
 
 const AddDoctor = () => {
-
+    const CreateDoctor = usePermission("Create Doctor")
     const dispatch = useAppDispatch()
     const navigate = useNavigate()
 
@@ -27,14 +29,16 @@ const AddDoctor = () => {
     
 
     const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-        e.preventDefault()
-        try{
-            await dispatch(CreateDoctorService(createDoctorRequest)).unwrap()
-            navigate("/doctor")
+        if(CreateDoctor) {
+            e.preventDefault()
+            try{
+                await dispatch(CreateDoctorService(createDoctorRequest)).unwrap()
+                navigate(generatePath(endpoints.doctor))
 
-        } catch(err) {
-            alert((err as Error).message)
-            dispatch(statusActions.setError((err as Error).message))
+            } catch(err) {
+                alert((err as Error).message)
+                dispatch(statusActions.setError((err as Error).message))
+            }
         }
     }
 
@@ -78,13 +82,20 @@ const AddDoctor = () => {
         }
     }
 
+    useEffect(() => {
+        if (!CreateDoctor) {
+            const credentials = JSON.parse(localStorage.getItem("credentials") || "")
+            const isPatient = credentials.accesses?.some((access: string) => access === "Patient")
+            navigate(isPatient ? generatePath(endpoints.dashboard) : generatePath(endpoints.home))
+        }
+    }, [CreateDoctor])
 
     return (
         <Wrapper>
-            <Title>Add New Doctor</Title>
+            <Title>Buat Dokter Baru</Title>
             
             <Report>
-                <ReportTitle>Doctor Form</ReportTitle>
+                <ReportTitle>Form Dokter</ReportTitle>
 
                 <Content className='my-3'>
                         <SubTitle>Identitas Doctor</SubTitle>
@@ -146,8 +157,8 @@ const AddDoctor = () => {
                             </Row>
 
                         <Bottom>
-                            <CancelBTN to="/doctor">Cancel</CancelBTN>
-                            <SubmitBTN type="submit">Submit</SubmitBTN>
+                            <CancelBTN to={generatePath(endpoints.doctor)}>Batal</CancelBTN>
+                            <SubmitBTN type="submit">Kirim</SubmitBTN>
                         </Bottom>
                         </Formx>
                 </Content>

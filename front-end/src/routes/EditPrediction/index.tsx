@@ -4,19 +4,21 @@ import Row from 'react-bootstrap/Row';
 import { useEffect, useState } from 'react';
 import { useAppDispatch } from '@store';
 import { statusActions } from '@store/status';
-import { useNavigate, useParams } from 'react-router-dom';
+import { generatePath, useNavigate, useParams } from 'react-router-dom';
 import { Prediction } from '@models/Prediction';
 import { GetPredictionService } from '@services/viewprediction';
 import { EditPredictionParams, EditPredictionService } from '@services/editprediction';
 import endpoints from "@constants/routes/admin"
 import InputFile from '@components/InputFile';
 import { Form } from 'react-bootstrap';
+import { usePermission } from '@hooks/usePermission';
 
 type Params = {
     predictionId: string
 }
 
     const EditPrediction = () => {
+        const UpdatePrediction = usePermission("Update Prediction")
         const [prediction, setPrediction] = useState<Prediction>({
             id: 0,
             patient_id: 0,
@@ -25,28 +27,15 @@ type Params = {
             right_eye_cond: "",
             left_eye_cond:"",
             created_at: "",
-            user: {
-                id: 0,
-                name: "",
-                nik: "",
-                email: "",
-                password: "string",
-                town: "",
-                gender: "",
-                birth_date: "",
-                phone: "",
-                picture: "",
-                role: "",
-                created_at: "",
-                }
+            user: undefined,
             },)
 
-            const [editPredictionRequest, setEditPredictionRequest] = useState<EditPredictionParams>({
-                predictionId:0,
-                patient_id: 0,
-                right_eye_pic: undefined,
-                left_eye_pic: undefined,
-                nik: "",
+        const [editPredictionRequest, setEditPredictionRequest] = useState<EditPredictionParams>({
+            predictionId:0,
+            patient_id: 0,
+            right_eye_pic: undefined,
+            left_eye_pic: undefined,
+            nik: "",
             })
             
         
@@ -83,15 +72,17 @@ type Params = {
                             patient_id: responseData.patient_id,
                             right_eye_pic: right_eye_pic ,
                             left_eye_pic: left_eye_pic,
-                            nik: responseData.user.nik,
+                            nik: responseData.user?.nik ?? "",
                         }))
                     }
                 } catch(err) {
                     dispatch(statusActions.setError((err as Error).message))
                 }
             }
-            fetchData()
-        }, [dispatch])      
+            if (UpdatePrediction) {
+                fetchData()
+            }
+        }, [dispatch, UpdatePrediction])    
     
         const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
             e.preventDefault()
@@ -156,12 +147,20 @@ type Params = {
             }
         }
 
+        useEffect(() => {
+            if (!UpdatePrediction) {
+                const credentials = JSON.parse(localStorage.getItem("credentials") || "")
+                const isPatient = credentials.accesses?.some((access: string) => access === "Patient")
+                navigate(isPatient ? generatePath(endpoints.dashboard) : generatePath(endpoints.home))
+            }
+        }, [UpdatePrediction])
+
     return (
         <Wrapper>
-            <Title>Edit Prediction</Title>
+            <Title>Edit Prediksi</Title>
             
             <Report>
-                <ReportTitle>Prediction Form</ReportTitle>
+                <ReportTitle>Form Prediksi</ReportTitle>
                 <Content className='my-3'>
                         <SubTitle>Identitas Pasien</SubTitle>
                         <Form onSubmit = {onSubmit}>
@@ -197,8 +196,8 @@ type Params = {
                         </Row>
 
                         <Bottom>
-                            <CancelBTN to="/prediction">Cancel</CancelBTN>
-                            <SubmitBTN type="submit">Submit</SubmitBTN>
+                            <CancelBTN to={generatePath(endpoints.prediction)}>Batal</CancelBTN>
+                            <SubmitBTN type="submit">Kirim</SubmitBTN>
                         </Bottom>
                         </Form>
                 </Content>

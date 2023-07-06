@@ -1,14 +1,16 @@
-import React, { ChangeEvent, useState } from 'react'
+import React, { ChangeEvent, useEffect, useState } from 'react'
 import { Wrapper, Title, Report, ReportTitle, Label, Control, Group, Content, SubTitle, Bottom, SubmitBTN, CancelBTN, Eye, EyeBox, GroupEye, Desc, Formx} from './AddDiagnosis.styles'
 import Row from 'react-bootstrap/Row';
 import { useAppDispatch } from '@store';
-import { useNavigate } from 'react-router-dom';
+import { generatePath, useNavigate } from 'react-router-dom';
 import { statusActions } from '@store/status';
 import InputFile from '@components/InputFile';
 import { CreateDiagnosisRequest, CreateDiagnosisService } from '@services/creatediagnosis';
+import endpoints from "@constants/routes/admin"
+import { usePermission } from '@hooks/usePermission';
 
 const AddDiagnosis = () => {
-
+    const CreateDiagnosis = usePermission("Create Diagnosis")
     const dispatch = useAppDispatch()
     const navigate = useNavigate()
 
@@ -23,14 +25,16 @@ const AddDiagnosis = () => {
     
 
     const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-        e.preventDefault()
-        try{
-            await dispatch(CreateDiagnosisService(createDiagnosisRequest)).unwrap()
-            navigate("/diagnosis")
+        if(CreateDiagnosis) {
+            e.preventDefault()
+            try{
+                await dispatch(CreateDiagnosisService(createDiagnosisRequest)).unwrap()
+                navigate(generatePath(endpoints.diagnosis))
 
-        } catch(err) {
-            alert((err as Error).message)
-            dispatch(statusActions.setError((err as Error).message))
+            } catch(err) {
+                alert((err as Error).message)
+                dispatch(statusActions.setError((err as Error).message))
+            }
         }
     }
 
@@ -86,12 +90,20 @@ const AddDiagnosis = () => {
         }
     }
 
+    useEffect(() => {
+        if (!CreateDiagnosis) {
+            const credentials = JSON.parse(localStorage.getItem("credentials") || "")
+            const isPatient = credentials.accesses?.some((access: string) => access === "Patient")
+            navigate(isPatient ? generatePath(endpoints.dashboard) : generatePath(endpoints.home))
+        }
+    }, [CreateDiagnosis])
+
     return (
         <Wrapper>
-            <Title>Add New Diagnosis</Title>
+            <Title>Buat Diagnosa Baru</Title>
             
             <Report>
-                <ReportTitle>Diagnosis Form</ReportTitle>
+                <ReportTitle>Form Diagnosa</ReportTitle>
 
                 <Content className='my-3'>
                         <SubTitle>Identitas Pasien</SubTitle>
@@ -136,13 +148,13 @@ const AddDiagnosis = () => {
                                     <Control type="text" placeholder="Normal/Katarak" id="left_eye_cond" value={createDiagnosisRequest.left_eye_cond} onChange={onChange}/>
                                 </Group>
 
-                                <Label>Description</Label>
-                                <Desc placeholder="Type here" id="description" value={createDiagnosisRequest.description} onChange={onChange}/>
+                                <Label>Deskripsi</Label>
+                                <Desc placeholder="Deskripsi" id="description" value={createDiagnosisRequest.description} onChange={onChange}/>
                         </Row>
 
                         <Bottom>
-                            <CancelBTN to="/diagnosis">Cancel</CancelBTN>
-                            <SubmitBTN type="submit">Submit</SubmitBTN>
+                            <CancelBTN to={generatePath(endpoints.diagnosis)}>Batal</CancelBTN>
+                            <SubmitBTN type="submit">Kirim</SubmitBTN>
                         </Bottom>
                         </Formx>
                 </Content>

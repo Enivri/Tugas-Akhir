@@ -51,10 +51,8 @@ export const EditUserService = createAsyncThunk(
 
             await api.put(
                 generatePath(endpoints.edituser, {userId: params.userId}),
-                {
-                    ...request,
-                    ...authHeader('application/json'),
-                }
+                request, 
+                authHeader("application/json"),
                 // request,
             )
         } catch (err) {

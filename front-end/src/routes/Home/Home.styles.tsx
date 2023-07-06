@@ -1,7 +1,4 @@
 import styled from 'styled-components'
-import Container from 'react-bootstrap/Container';
-import Row from 'react-bootstrap/Row';
-import Col from 'react-bootstrap/Col';
 import Card from 'react-bootstrap/Card';
 import { Link } from 'react-router-dom';
 
@@ -22,7 +19,6 @@ export const HomeOption = styled(Card)`
     box-shadow: 0px 11px 27px 0px rgba(0,0,0,0.5);
     -webkit-box-shadow: 0px 11px 27px 0px rgba(0,0,0,0.5);
     -moz-box-shadow: 0px 11px 27px 0px rgba(0,0,0,0.5);
-    margin-bottom: 30px;
     @media screen and (max-width: 1440px) {
     width: 200px;
     height: 250px;
@@ -55,14 +51,14 @@ export const TextCard = styled(Card.Title)`
     font-size: 1rem;
 `
 
-export const OptionContainer = styled(Container)`
-    margin-top: 50px;
-`
-export const OptionRow = styled(Row)`
-    justify-content: center;
-`
-export const OptionCol = styled(Col)`
-    padding: 0;
+export const OptionContainer = styled.div`
+    width: 90%;
+    margin: 30px auto;
+    height: auto;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    grid-gap: 4rem;
+    justify-items: center;
 `
 export const Header = styled(Link)`
     font-size: 2rem;

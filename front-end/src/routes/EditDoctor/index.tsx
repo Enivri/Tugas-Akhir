@@ -3,18 +3,20 @@ import { Wrapper, Title, Report, ReportTitle, Label, Control, Group, Content, Su
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import { useAppDispatch } from '@store';
-import { useNavigate, useParams } from 'react-router-dom';
+import { generatePath, useNavigate, useParams } from 'react-router-dom';
 import { EditUserParams, EditUserService } from '@services/edituser';
 import { statusActions } from '@store/status';
 import { GetUserService, Response } from '@services/viewuser';
 import endpoints from "@constants/routes/admin"
 import InputFile from '@components/InputFile';
+import { usePermission } from '@hooks/usePermission';
 
 type Params = {
     userId: string
 }
 
 const EditDoctor = () => {
+    const UpdateUser = usePermission("Update User")
     const [user, setUser] = useState<Response>({
         data: {
             id: 0,
@@ -74,8 +76,10 @@ const EditDoctor = () => {
                 dispatch(statusActions.setError((err as Error).message))
             }
         }
-        fetchData()
-    }, [dispatch])
+        if (UpdateUser) {
+            fetchData()
+        }
+    }, [dispatch, UpdateUser])
 
     const [editUserRequest, setEditUserRequest] = useState<EditUserParams>({
         userId: "",
@@ -141,12 +145,20 @@ const EditDoctor = () => {
         }
     }
 
+    useEffect(() => {
+        if (!UpdateUser) {
+            const credentials = JSON.parse(localStorage.getItem("credentials") || "")
+            const isPatient = credentials.accesses?.some((access: string) => access === "Patient")
+            navigate(isPatient ? generatePath(endpoints.dashboard) : generatePath(endpoints.home))
+        }
+    }, [UpdateUser])
+
     return (
         <Wrapper>
-            <Title>Edit Doctor</Title>
+            <Title>Edit Dokter</Title>
             
             <Report>
-                <ReportTitle>Doctor Form</ReportTitle>
+                <ReportTitle>Form Doctor</ReportTitle>
 
                 <Content className='my-3'>
                         <SubTitle>Identitas Doctor</SubTitle>
@@ -203,8 +215,8 @@ const EditDoctor = () => {
                             </Row>
 
                         <Bottom>
-                            <CancelBTN to="/doctor">Cancel</CancelBTN>
-                            <SubmitBTN type="submit">Submit</SubmitBTN>
+                            <CancelBTN to={generatePath(endpoints.doctor)}>Batal</CancelBTN>
+                            <SubmitBTN type="submit">Kirim</SubmitBTN>
                         </Bottom>
                         </Formx>
                 </Content>

@@ -17,6 +17,7 @@ class Diagnosis(db.Model):
     patient_id = db.Column(db.Integer, db.ForeignKey(User.id))
     user = db.relationship("User", foreign_keys=[patient_id])
     doctor_id = db.Column(db.Integer, db.ForeignKey(User.id))
+    doctor = db.relationship("User", foreign_keys=[doctor_id])
     prediction_id = db.Column(db.Integer, db.ForeignKey(Prediction.id))
     prediction = db.relationship("Prediction", foreign_keys=[prediction_id])
     code = db.Column(db.String())

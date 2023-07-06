@@ -17,6 +17,10 @@ export const Title = styled.p`
 `
 export const Welcome = styled(Navbar.Text)`
     font-size: 1.5rem;
+    display: initial;
+    @media screen and (max-width: 480px) {
+    display: none;
+    }
 `
 export const IconTitle = styled.i`
     font-size: 1.5rem;

@@ -1,48 +1,34 @@
 import React, { } from 'react'
-import { Wrapper, Report, ReportTitle, Content, SubTitle, Identity, Pasfoto, SubContent, Titlespace, ImageDiv, Eyes, EyesCard } from './ViewPrediction.styles'
-import Col from 'react-bootstrap/Col';
+import { Wrapper, Report, ReportTitle, Content, SubTitle, Identity, Pasfoto, SubContent, Titlespace, Eyes, EyesCard } from './ViewPrediction.styles'
 import { useEffect, useState } from 'react';
 import { useAppDispatch } from '@store';
 import { statusActions } from '@store/status';
-import { useParams } from 'react-router-dom';
-import admin from '@constants/routes/admin';
+import { generatePath, useNavigate, useParams } from 'react-router-dom';
 import { parseDate } from '@utils/converter';
 import { GetPredictionService } from '@services/viewprediction';
 import { Prediction } from '@models/Prediction';
+import endpoints from '@constants/routes/admin';
+import { usePermission } from '@hooks/usePermission';
 
 type Params = {
     predictionId: string
 }
 
 const ViewPrediction = () => {
-    const LIMIT = 3
+    const GetPrediction = usePermission("Get Prediction")
     const [prediction, setPrediction] = useState<Prediction>({        
             id: 0,
             patient_id: 0,
-            user: {
-                id: 0,
-                name: "",
-                nik: "",
-                email: "",
-                password: "string",
-                town: "",
-                gender: "",
-                birth_date: "",
-                phone: "",
-                picture: "",
-                role: "",
-                created_at: "",
-                },
             right_eye_pic: "",
             left_eye_pic: "",
             right_eye_cond: "",
             left_eye_cond:"",
-            created_at: ""
+            created_at: "",
+            user: undefined,
 })
     
-    const [currentPage, setCurrentPage] = useState(1)
     const params = useParams<Params>()
-
+    const navigate = useNavigate()
     const dispatch = useAppDispatch()
     useEffect(() => {
         const fetchData = async () =>{
@@ -57,16 +43,25 @@ const ViewPrediction = () => {
                 dispatch(statusActions.setError((err as Error).message))
             }
         }
-        fetchData()
-    }, [dispatch])
+        if (GetPrediction) {
+            fetchData()
+        }
+    }, [dispatch, GetPrediction])
+
+    useEffect(() => {
+        if (!GetPrediction) {
+            const credentials = JSON.parse(localStorage.getItem("credentials") || "")
+            const isPatient = credentials.accesses?.some((access: string) => access === "Patient")
+            navigate(isPatient ? generatePath(endpoints.dashboard) : generatePath(endpoints.home))
+        }
+    }, [GetPrediction])
 
     return (
         <Wrapper>
             <Report>
-                <ReportTitle>View Prediction Detail</ReportTitle>
+                <ReportTitle>Detail Prediksi</ReportTitle>
                 <Content>
                     <Identity>
-                        {/* <Col>            */}
                             <SubTitle>
                                 Identitas Pasien
                             </SubTitle>
@@ -84,7 +79,7 @@ const ViewPrediction = () => {
                             <SubContent>
                                 <Titlespace>Tanggal Lahir <br/>(dd/mm/yyyy)</Titlespace>
                                 <p>:</p>
-                                <p>{ parseDate(prediction?.user?.birth_date) }</p>
+                                <p>{ parseDate(prediction?.user?.birth_date ?? "") }</p>
                             </SubContent>
                             <SubContent>
                                 <Titlespace>Kota</Titlespace>
@@ -99,14 +94,9 @@ const ViewPrediction = () => {
                             <SubContent>
                                 <Titlespace>No. Telpon </Titlespace>
                                 <p>:</p>
-                                <p>{ prediction?.user?.phone }</p>
+                                <p>{ prediction?.user?.phone ?? ""}</p>
                             </SubContent>
 
-                        {/* </Col> */}
-                        
-                        {/* <ImageDiv>
-                            <Pasfoto src={prediction?.user?.picture} alt="Image eror" />
-                        </ImageDiv> */}
                     </Identity>
 
                     <Eyes>

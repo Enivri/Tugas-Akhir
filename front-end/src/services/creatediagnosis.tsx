@@ -35,10 +35,8 @@ export const CreateDiagnosisService = createAsyncThunk(
 
             const response = await api.post(
                 endpoints.creatediagnosis,
-                {
-                    ...request,
-                    ...authHeader('application/json')
-                }
+                request, 
+                authHeader("application/json"),
             )
             const data = (response.data as Diagnosis)
             return data

@@ -16,6 +16,7 @@ class Operation(db.Model):
     patient_id = db.Column(db.Integer, db.ForeignKey(User.id))
     user = db.relationship("User", foreign_keys=[patient_id])
     doctor_id = db.Column(db.Integer, db.ForeignKey(User.id))
+    doctor = db.relationship("User", foreign_keys=[doctor_id])
     diagnosis_id = db.Column(db.Integer, db.ForeignKey(Diagnosis.id))
     diagnosis = db.relationship("Diagnosis", foreign_keys=[diagnosis_id])
     code = db.Column(db.String())

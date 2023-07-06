@@ -20,11 +20,11 @@ const NavbarComponent = () => {
                     <IconButton className="fa-solid fa-bars" onClick={onClick}></IconButton>
             </SideButton>
             <Container>
-                <Title>Cataract</Title>
+                <Title>Katarak</Title>
                 <IconTitle className="fa-sharp fa-solid fa-eye"></IconTitle>
                 <Navbar.Collapse className="justify-content-end">
                     <Welcome>
-                        Welcome, <a>{ credentials.name } </a>
+                        Selamat Datang, <a>{ credentials.name } </a>
                     </Welcome>
                 </Navbar.Collapse>
             </Container>

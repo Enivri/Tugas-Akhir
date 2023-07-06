@@ -12,6 +12,7 @@ export type Operation = {
     result: string
     description: string
     created_at: string
-    user: User
-    diagnosis: Diagnosis
+    user?: User
+    doctor?: User
+    diagnosis?: Diagnosis
 }

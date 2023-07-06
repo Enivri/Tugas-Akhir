@@ -4,16 +4,19 @@ import Col from 'react-bootstrap/Col';
 import { useEffect, useState } from 'react';
 import { useAppDispatch } from '@store';
 import { statusActions } from '@store/status';
-import { useParams } from 'react-router-dom';
+import { generatePath, useNavigate, useParams } from 'react-router-dom';
 import { parseDate } from '@utils/converter';
 import { Operation } from '@models/Operation';
 import { GetOperationService } from '@services/viewoperation';
+import endpoints from '@constants/routes/admin';
+import { usePermission } from '@hooks/usePermission';
 
 type Params = {
     operationId: string
 }
 
 const ViewOperation= () => {
+    const GetOperation = usePermission("Get Operation")
     const [operation, setOperation] = useState<Operation>({        
             id: 0,
             patient_id: 0,
@@ -25,74 +28,13 @@ const ViewOperation= () => {
             result:"",
             description:"",
             created_at: "",
-            user: {
-                id: 0,
-                name: "",
-                nik: "",
-                email: "",
-                password: "string",
-                town: "",
-                gender: "",
-                birth_date: "",
-                phone: "",
-                picture: "",
-                role: "",
-                created_at: "",
-                },
-            diagnosis:{
-                id: 0,
-                patient_id: 0,
-                doctor_id:0,
-                prediction_id: 0,
-                code: "",
-                right_eye_pic: "",
-                left_eye_pic: "",
-                right_eye_cond: "",
-                left_eye_cond:"",
-                description:"",
-                created_at: "",
-                user: {
-                    id: 0,
-                    name: "",
-                    nik: "",
-                    email: "",
-                    password: "string",
-                    town: "",
-                    gender: "",
-                    birth_date: "",
-                    phone: "",
-                    picture: "",
-                    role: "",
-                    created_at: "",
-                    },
-                prediction:{
-                    id: 0,
-                    patient_id: 0,
-                    user: {
-                        id: 0,
-                        name: "",
-                        nik: "",
-                        email: "",
-                        password: "string",
-                        town: "",
-                        gender: "",
-                        birth_date: "",
-                        phone: "",
-                        picture: "",
-                        role: "",
-                        created_at: "",
-                        },
-                    right_eye_pic: "",
-                    left_eye_pic: "",
-                    right_eye_cond: "",
-                    left_eye_cond:"",
-                    created_at: ""
-                }
-            }    
+            user: undefined,
+            doctor: undefined,
+            diagnosis: undefined,    
 })
     
     const params = useParams<Params>()
-
+    const navigate = useNavigate()
     const dispatch = useAppDispatch()
     useEffect(() => {
         const fetchData = async () =>{
@@ -107,13 +49,23 @@ const ViewOperation= () => {
                 dispatch(statusActions.setError((err as Error).message))
             }
         }
-        fetchData()
-    }, [dispatch])
+        if (GetOperation) {
+            fetchData()
+        }
+    }, [dispatch, GetOperation])
+
+    useEffect(() => {
+        if (!GetOperation) {
+            const credentials = JSON.parse(localStorage.getItem("credentials") || "")
+            const isPatient = credentials.accesses?.some((access: string) => access === "Patient")
+            navigate(isPatient ? generatePath(endpoints.dashboard) : generatePath(endpoints.home))
+        }
+    }, [GetOperation])
 
     return (
         <Wrapper>
             <Report>
-                <ReportTitle>View Operation Detail</ReportTitle>
+                <ReportTitle>Detail Operasi</ReportTitle>
                 <Content>
                     <Identity>
                         <Col>           
@@ -134,7 +86,7 @@ const ViewOperation= () => {
                             <SubContent>
                                 <Titlespace>Tanggal Lahir <br/>(dd/mm/yyyy)</Titlespace>
                                 <p>:</p>
-                                <p>{ parseDate(operation?.user?.birth_date) }</p>
+                                <p>{ parseDate(operation?.user?.birth_date ?? "") }</p>
                             </SubContent>
                             <SubContent>
                                 <Titlespace>Kota</Titlespace>
@@ -151,12 +103,28 @@ const ViewOperation= () => {
                                 <p>:</p>
                                 <p>{ operation?.user?.phone }</p>
                             </SubContent>
-
                         </Col>
                         
-                        <ImageDiv>
-                            <Pasfoto src={operation?.user?.picture} alt="Image eror" />
-                        </ImageDiv>
+                        <Col>
+                            <SubTitle>
+                                    Identitas Doctor
+                            </SubTitle>
+                                <SubContent>
+                                    <Titlespace>Nama Lengkap </Titlespace>
+                                    <p>:</p>
+                                    <p>{ operation?.doctor?.name }</p>
+                                </SubContent>
+                                <SubContent>
+                                    <Titlespace>Tanggal Lahir <br/>(dd/mm/yyyy)</Titlespace>
+                                    <p>:</p>
+                                    <p>{ parseDate(operation?.doctor?.birth_date ?? "") }</p>
+                                </SubContent>
+                                <SubContent>
+                                    <Titlespace>Jenis kelamin </Titlespace>
+                                    <p>:</p>
+                                    <p>{ operation?.doctor?.gender }</p>
+                                </SubContent>
+                        </Col>
                     </Identity>
 
                     <Eyes>
@@ -172,19 +140,19 @@ const ViewOperation= () => {
                     </Eyes>
 
                     <SecContent>
-                        <Titlemargin>Kode Diagnosis </Titlemargin>
+                        <Titlemargin>Kode Diagnosa </Titlemargin>
                         <p>:</p>
                         <p>{ operation?.code }</p>
                     </SecContent>
 
                     <SecContent>
-                        <Titlemargin>Result</Titlemargin>
+                        <Titlemargin>Hasil</Titlemargin>
                         <p>:</p>
                         <p>{ operation?.result }</p>
                     </SecContent>
 
                     <Description>
-                        <h4>Description :</h4>
+                        <h4>Deskripsi :</h4>
                         <p>{operation?.description}</p>
                     </Description>
 

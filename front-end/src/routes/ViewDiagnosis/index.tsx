@@ -1,19 +1,22 @@
 import React, { } from 'react'
-import { Wrapper, Report, ReportTitle, Content, SubTitle, Identity, Pasfoto, SubContent, Titlespace, ImageDiv, Eyes, EyesCard, EyesTitle, EyesBox, Description } from './ViewDiagnosis.styles'
+import { Wrapper, Report, ReportTitle, Content, SubTitle, Identity, Pasfoto, SubContent, Titlespace, Eyes, EyesCard, EyesTitle, EyesBox, Description } from './ViewDiagnosis.styles'
 import Col from 'react-bootstrap/Col';
 import { useEffect, useState } from 'react';
 import { useAppDispatch } from '@store';
 import { statusActions } from '@store/status';
-import { useParams } from 'react-router-dom';
+import { generatePath, useNavigate, useParams } from 'react-router-dom';
 import { parseDate } from '@utils/converter';
 import { GetDiagnosisService } from '@services/viewdiagnosis';
 import { Diagnosis } from '@models/Diagnosis';
+import endpoints from '@constants/routes/admin';
+import { usePermission } from '@hooks/usePermission';
 
 type Params = {
     diagnosisId: string
 }
 
 const ViewDiagnosis= () => {
+    const GetDiagnosis = usePermission("Get Diagnosis")
     const [diagnosis, setDiagnosis] = useState<Diagnosis>({        
             id: 0,
             patient_id: 0,
@@ -26,47 +29,13 @@ const ViewDiagnosis= () => {
             left_eye_cond:"",
             description:"",
             created_at: "",
-            user: {
-                id: 0,
-                name: "",
-                nik: "",
-                email: "",
-                password: "string",
-                town: "",
-                gender: "",
-                birth_date: "",
-                phone: "",
-                picture: "",
-                role: "",
-                created_at: "",
-                },
-            prediction:{
-                id: 0,
-                patient_id: 0,
-                user: {
-                    id: 0,
-                    name: "",
-                    nik: "",
-                    email: "",
-                    password: "string",
-                    town: "",
-                    gender: "",
-                    birth_date: "",
-                    phone: "",
-                    picture: "",
-                    role: "",
-                    created_at: "",
-                    },
-                right_eye_pic: "",
-                left_eye_pic: "",
-                right_eye_cond: "",
-                left_eye_cond:"",
-                created_at: "",
-            },
+            user: undefined,
+            doctor: undefined,
+            prediction: undefined,
 })
     
     const params = useParams<Params>()
-
+    const navigate = useNavigate()
     const dispatch = useAppDispatch()
     useEffect(() => {
         const fetchData = async () =>{
@@ -81,13 +50,23 @@ const ViewDiagnosis= () => {
                 dispatch(statusActions.setError((err as Error).message))
             }
         }
-        fetchData()
-    }, [dispatch])
+        if (GetDiagnosis) {
+            fetchData()
+        }
+    }, [dispatch, GetDiagnosis])
+
+    useEffect(() => {
+        if (!GetDiagnosis) {
+            const credentials = JSON.parse(localStorage.getItem("credentials") || "")
+            const isPatient = credentials.accesses?.some((access: string) => access === "Patient")
+            navigate(isPatient ? generatePath(endpoints.dashboard) : generatePath(endpoints.home))
+        }
+    }, [GetDiagnosis])
 
     return (
         <Wrapper>
             <Report>
-                <ReportTitle>View Diagnosis Detail</ReportTitle>
+                <ReportTitle>Detail Diagnosa</ReportTitle>
                 <Content>
                     <Identity>
                         <Col>           
@@ -108,7 +87,7 @@ const ViewDiagnosis= () => {
                             <SubContent>
                                 <Titlespace>Tanggal Lahir <br/>(dd/mm/yyyy)</Titlespace>
                                 <p>:</p>
-                                <p>{ parseDate(diagnosis?.user?.birth_date) }</p>
+                                <p>{ parseDate(diagnosis?.user?.birth_date ?? "") }</p>
                             </SubContent>
                             <SubContent>
                                 <Titlespace>Kota</Titlespace>
@@ -125,17 +104,34 @@ const ViewDiagnosis= () => {
                                 <p>:</p>
                                 <p>{ diagnosis?.user?.phone }</p>
                             </SubContent>
-
                         </Col>
                         
-                        <ImageDiv>
-                            <Pasfoto src={diagnosis?.user?.picture} alt="Image eror" />
-                        </ImageDiv>
+                        <Col>
+                            <SubTitle>
+                                    Identitas Doctor
+                            </SubTitle>
+                                
+                                <SubContent>
+                                    <Titlespace>Nama Lengkap </Titlespace>
+                                    <p>:</p>
+                                    <p>{ diagnosis?.doctor?.name }</p>
+                                </SubContent>
+                                <SubContent>
+                                    <Titlespace>Tanggal Lahir <br/>(dd/mm/yyyy)</Titlespace>
+                                    <p>:</p>
+                                    <p>{ parseDate(diagnosis?.doctor?.birth_date ?? "") }</p>
+                                </SubContent>
+                                <SubContent>
+                                    <Titlespace>Jenis kelamin </Titlespace>
+                                    <p>:</p>
+                                    <p>{ diagnosis?.doctor?.gender }</p>
+                                </SubContent>
+                        </Col>
                     </Identity>
 
                     <EyesBox>
                         <EyesTitle>
-                            <h4>Diagnosis</h4>
+                            <h4>Diagnosa</h4>
                             <Eyes>
                                 <EyesCard>
                                     <p>Mata Kanan</p>
@@ -152,7 +148,7 @@ const ViewDiagnosis= () => {
                         </EyesTitle>
 
                         <EyesTitle>
-                            <h4>Prediction</h4>
+                            <h4>Prediksi</h4>
                             <Eyes>
                                 <EyesCard>
                                     <p>Mata Kanan</p>
@@ -170,7 +166,7 @@ const ViewDiagnosis= () => {
                     </EyesBox>
 
                     <Description>
-                        <h4>Description :</h4>
+                        <h4>Deskripsi :</h4>
                         <p>{diagnosis?.description}</p>
                     </Description>
 

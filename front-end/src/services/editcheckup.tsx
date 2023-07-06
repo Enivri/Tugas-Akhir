@@ -8,7 +8,7 @@ import { upload } from "./upload"
 
 export interface EditCheckUpParams {
     checkupId: number
-    code: string
+    operation_code: string
     patient_id: number
     operation_id: number
     right_eye_pic?: File
@@ -17,7 +17,7 @@ export interface EditCheckUpParams {
 }
 
 interface EditCheckUpRequest {
-    code: string
+    operation_code: string
     right_eye_pic?: string
     left_eye_pic?: string
     description: string
@@ -35,7 +35,7 @@ export const EditCheckUpService = createAsyncThunk(
             ])
 
             const request: EditCheckUpRequest = {
-                code: params.code,
+                operation_code: params.operation_code,
                 right_eye_pic: right_eye_pic_url,
                 left_eye_pic: left_eye_pic_url,
                 description: params.description
@@ -43,10 +43,8 @@ export const EditCheckUpService = createAsyncThunk(
 
             await api.put(
                 generatePath(endpoints.editcheckup, {checkupId: params.checkupId}),
-                {
-                    ...request,
-                    ...authHeader('application/json'),
-                }
+                request, 
+                authHeader("application/json"),
                 // request,
             )
         } catch (err) {

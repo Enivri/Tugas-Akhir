@@ -10,6 +10,8 @@ import routes from '@constants/routes/api'
 import Login from '@routes/Login';
 import SignUp from '@routes/SignUp';
 import Home from '@routes/Home';
+import PatientDashboard from '@routes/PatientDashboard';
+import AddTrial from '@routes/AddTrial';
 import Patient from '@routes/Patient'
 import AddPatient from '@routes/AddPatient';
 import EditPatient from "@routes/EditPatient"
@@ -46,6 +48,8 @@ const App: React.FC = () => {
 					<Route path={routes.signup} element={<SignUp />}/>
 					<Route path="/" element={<Middleware />}>
 						<Route path={routes.home} element={<Home />}/>
+						<Route path={adminRoutes.dashboard} element={<PatientDashboard/>}/>
+						<Route path={adminRoutes.addtrial} element={<AddTrial/>}/>
 						<Route path={adminRoutes.patient} element={<Patient />}/>
 						<Route path={adminRoutes.addpatient} element={<AddPatient />}/>
 						<Route path={adminRoutes.editpatient} element={<EditPatient />}/>

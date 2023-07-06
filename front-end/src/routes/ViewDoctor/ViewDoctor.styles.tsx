@@ -70,7 +70,7 @@ export const SubCode= styled.div`
     margin-bottom: 7px;
 `
 export const Titlespace = styled.p`
-    width: 40%;
+    width: 50%;
 `
 export const PagePosition = styled.div`
     display: flex;

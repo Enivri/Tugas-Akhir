@@ -7,12 +7,16 @@ import { GetUserListService, Response } from '@services/userlist';
 import { Role } from '@models/User';
 import { statusActions } from '@store/status';
 import Page from '@components/Pagination';
-import { generatePath } from 'react-router-dom';
+import { generatePath, useNavigate } from 'react-router-dom';
 import endpoints from '@constants/routes/admin';
 import { parseDate } from '@utils/converter';
 import { request } from 'http';
+import { usePermission } from '@hooks/usePermission';
 
 const  Patient = () => {
+    const CreatePatient = usePermission("Create Patient")
+    const UpdateUser = usePermission("Update User")
+    const GetPatient = usePermission("Get Patient")
     const LIMIT = 10
     const [users, setUsers] = useState<Response>({
         data: [],
@@ -24,9 +28,12 @@ const  Patient = () => {
     const [search, setSearch] = useState("")
 
     const dispatch = useAppDispatch()
+    const navigate = useNavigate()
     useEffect(() => {
-        onSearch()
-    }, [dispatch, currentPage, LIMIT])
+        if (GetPatient) {
+            onSearch()
+        }
+    }, [dispatch, currentPage, LIMIT, GetPatient])
     
     const onChange = (e: ChangeEvent<HTMLInputElement>) => {
         const { value } = e.currentTarget as HTMLInputElement
@@ -48,16 +55,26 @@ const  Patient = () => {
         }
     }
 
+    useEffect(() => {
+        if (!GetPatient) {
+            const credentials = JSON.parse(localStorage.getItem("credentials") || "")
+            const isPatient = credentials.accesses?.some((access: string) => access === "Patient")
+            navigate(isPatient ? generatePath(endpoints.dashboard) : generatePath(endpoints.home))
+        }
+    }, [GetPatient])
+
     return (
     <Wrapper>
-        <Header to="#patient">Patient</Header>
+        <Header to="#patient">Pasien</Header>
 
         <Options>
                 <SearchBar className="mb-3" controlId="exampleForm.ControlInput1" >
-                    <Form.Control type="text" placeholder="Search" value={search} onChange={onChange} />
-                    <Search onClick={onSearch}>Search</Search>
+                    <Form.Control type="text" placeholder="Cari" value={search} onChange={onChange} />
+                    <Search onClick={onSearch}>Cari</Search>
                 </SearchBar>
-            <AddNew to={generatePath(endpoints.addpatient)}>Add New</AddNew>
+            { CreatePatient &&(  
+                <AddNew to={generatePath(endpoints.addpatient)}>Buat Baru</AddNew>
+            ) }
         </Options>
 
         <Table responsive striped bordered hover>
@@ -90,9 +107,11 @@ const  Patient = () => {
                         <ActionButton to={generatePath(endpoints.viewpatient, { userId: user.id })}>
                             <IconAction className="fa-regular fa-file-lines"></IconAction>
                         </ActionButton>
-                        <ActionButton to={generatePath(endpoints.editpatient, { userId: user.id })}>
-                            <IconAction className="fa-solid fa-pen-to-square"></IconAction>
-                        </ActionButton>
+                        { UpdateUser &&(  
+                            <ActionButton to={generatePath(endpoints.editpatient, { userId: user.id })}>
+                                <IconAction className="fa-solid fa-pen-to-square"></IconAction>
+                            </ActionButton>
+                        ) }
                         </td>
                     </tr>
                 ))

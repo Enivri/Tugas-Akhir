@@ -5,12 +5,15 @@ import { ChangeEvent, useEffect, useState } from 'react';
 import { useAppDispatch } from '@store';
 import { statusActions } from '@store/status';
 import Page from '@components/Pagination';
-import { generatePath } from 'react-router-dom';
+import { generatePath, useNavigate } from 'react-router-dom';
 import endpoints from '@constants/routes/admin';
 import { parseDate } from '@utils/converter';
 import { CheckUpListResponse, GetCheckUpListService } from '@services/checkuplist';
+import { usePermission } from '@hooks/usePermission';
 
 const CheckUp = () => {
+    const UpdateCheckUp = usePermission("Update CheckUp")
+    const GetCheckUp = usePermission("Get CheckUp")
     const LIMIT = 10
     const [checkUps, setCheckUp] = useState<CheckUpListResponse>({
         data: [],
@@ -22,9 +25,12 @@ const CheckUp = () => {
     const [search, setSearch] = useState("")
 
     const dispatch = useAppDispatch()
+    const navigate = useNavigate()
     useEffect(() => {
-        onSearch()
-    }, [dispatch, currentPage, LIMIT])
+        if (GetCheckUp) {
+            onSearch()
+        }
+    }, [dispatch, currentPage, LIMIT, GetCheckUp])
     
     const onChange = (e: ChangeEvent<HTMLInputElement>) => {
         const { value } = e.currentTarget as HTMLInputElement
@@ -45,24 +51,32 @@ const CheckUp = () => {
         }
     }
 
+    useEffect(() => {
+        if (!GetCheckUp) {
+            const credentials = JSON.parse(localStorage.getItem("credentials") || "")
+            const isPatient = credentials.accesses?.some((access: string) => access === "Patient")
+            navigate(isPatient ? generatePath(endpoints.dashboard) : generatePath(endpoints.home))
+        }
+    }, [GetCheckUp])
+
     return (
     <Wrapper>
-        <Header to="#patient">CheckUp</Header>
+        <Header to="#patient">Check Up</Header>
 
         <Options>
             <SearchBar className="mb-3" controlId="exampleForm.ControlInput1">
-                <Form.Control type="text" placeholder="Search" value={search} onChange={onChange} />
-                <Search onClick={onSearch}>Search</Search>
+                <Form.Control type="text" placeholder="Cari" value={search} onChange={onChange} />
+                <Search onClick={onSearch}>Cari</Search>
             </SearchBar>
-            <AddNew to={generatePath(endpoints.addcheckup)}>Add New</AddNew>
+            <AddNew to={generatePath(endpoints.addcheckup)}>Buat Baru</AddNew>
         </Options>
 
         <Table responsive striped bordered hover>
         <thead>
             <tr>
             <th>No</th>
-            <th>Tanggal CheckUp <br/>(dd/mm/yyyy)</th>
-            <th>Kode Operation</th>
+            <th>Tanggal Check Up <br/>(dd/mm/yyyy)</th>
+            <th>Kode Operasi</th>
             <th>Nama Pasien</th>
             <th>NIK</th>
             <th>Jenis Kelamin</th>
@@ -85,9 +99,11 @@ const CheckUp = () => {
                         <ActionButton to={generatePath(endpoints.viewcheckup, { checkupId: checkUp.id })}>
                             <IconAction className="fa-regular fa-file-lines"></IconAction>
                         </ActionButton>
-                        <ActionButton to={generatePath(endpoints.editcheckup, { checkupId: checkUp.id })}>
-                            <IconAction className="fa-solid fa-pen-to-square"></IconAction>
-                        </ActionButton>
+                        { UpdateCheckUp &&( 
+                            <ActionButton to={generatePath(endpoints.editcheckup, { checkupId: checkUp.id })}>
+                                <IconAction className="fa-solid fa-pen-to-square"></IconAction>
+                            </ActionButton>
+                        ) }
                         </td>
                     </tr>
                 ))

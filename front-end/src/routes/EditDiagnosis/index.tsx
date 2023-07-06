@@ -4,18 +4,20 @@ import Row from 'react-bootstrap/Row';
 import { useEffect, useState } from 'react';
 import { useAppDispatch } from '@store';
 import { statusActions } from '@store/status';
-import { useNavigate, useParams } from 'react-router-dom';
+import { generatePath, useNavigate, useParams } from 'react-router-dom';
 import endpoints from "@constants/routes/admin"
 import InputFile from '@components/InputFile';
 import { Diagnosis } from '@models/Diagnosis';
 import { EditDiagnosisParams, EditDiagnosisService } from '@services/editdiagnosis';
 import { GetDiagnosisService } from '@services/viewdiagnosis';
+import { usePermission } from '@hooks/usePermission';
 
 type Params = {
     diagnosisId: string
 }
 
     const EditDiagnosis= () => {
+        const UpdateDiagnosis = usePermission("Update Diagnosis")
         const [diagnosis, setDiagnosis] = useState<Diagnosis>({
             id: 0,
             patient_id: 0,
@@ -28,43 +30,8 @@ type Params = {
             left_eye_cond:"",
             description: "",
             created_at: "",
-            user: {
-                id: 0,
-                name: "",
-                nik: "",
-                email: "",
-                password: "string",
-                town: "",
-                gender: "",
-                birth_date: "",
-                phone: "",
-                picture: "",
-                role: "",
-                created_at: "",
-                },
-                prediction:{
-                    id: 0,
-                    patient_id: 0,
-                    user: {
-                        id: 0,
-                        name: "",
-                        nik: "",
-                        email: "",
-                        password: "string",
-                        town: "",
-                        gender: "",
-                        birth_date: "",
-                        phone: "",
-                        picture: "",
-                        role: "",
-                        created_at: "",
-                        },
-                right_eye_pic: "",
-                left_eye_pic: "",
-                right_eye_cond: "",
-                left_eye_cond:"",
-                created_at: ""
-                }
+            user: undefined,
+            prediction: undefined,
             },)
 
             const [editDiagnosisRequest, setEditDiagnosisRequest] = useState<EditDiagnosisParams>({
@@ -118,15 +85,17 @@ type Params = {
                             right_eye_cond: responseData.right_eye_cond,
                             left_eye_cond: responseData.left_eye_cond,
                             description: responseData.description,
-                            nik: responseData.user.nik,
+                            nik: responseData.user?.nik ?? "",
                         }))
                     }
                 } catch(err) {
                     dispatch(statusActions.setError((err as Error).message))
                 }
             }
-            fetchData()
-        }, [dispatch])      
+            if (UpdateDiagnosis) {
+                fetchData()
+            }
+        }, [dispatch, UpdateDiagnosis])  
     
         const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
             e.preventDefault()
@@ -191,12 +160,20 @@ type Params = {
             }
         }
 
+        useEffect(() => {
+            if (!UpdateDiagnosis) {
+                const credentials = JSON.parse(localStorage.getItem("credentials") || "")
+                const isPatient = credentials.accesses?.some((access: string) => access === "Patient")
+                navigate(isPatient ? generatePath(endpoints.dashboard) : generatePath(endpoints.home))
+            }
+        }, [UpdateDiagnosis])
+
     return (
         <Wrapper>
-            <Title>Edit Diagnosis</Title>
+            <Title>Edit Diagnosa</Title>
             
             <Report>
-                <ReportTitle>Diagnosis Form</ReportTitle>
+                <ReportTitle>Form Diagnosa</ReportTitle>
 
                 <Content className='my-3'>
                         <SubTitle>Identitas Pasien</SubTitle>
@@ -246,8 +223,8 @@ type Params = {
                         </Row>
 
                         <Bottom>
-                            <CancelBTN to="/diagnosis">Cancel</CancelBTN>
-                            <SubmitBTN type="submit">Submit</SubmitBTN>
+                            <CancelBTN to={generatePath(endpoints.diagnosis)}>Batal</CancelBTN>
+                            <SubmitBTN type="submit">Kirim</SubmitBTN>
                         </Bottom>
                         </Formx>
                 </Content>

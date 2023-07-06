@@ -9,7 +9,6 @@ export const Report = styled.div`
     width: 50vw;
     margin: 0 auto;
     margin-top: 100px;
-
     @media screen and (max-width: 480px) {
     width: 80vw;
 }
@@ -31,22 +30,22 @@ export const Group = styled(Form.Group)`
     margin-bottom: 10px;
 `
 export const SubContent= styled.div`
-    margin-left: 30px;
     display: flex;
 `
 export const SubTitle = styled.div`
+    display: flex;
+    justify-content: center;
     margin-bottom: 10px;
 `
 export const Identity = styled(Row)`
     display: flex;
-    justify-content: space-between;
+    justify-content: space-between; 
     margin-bottom: 10px;
 `
 export const ImageDiv = styled(Col)`
     display: flex;
     justify-content: center;
 `
-
 export const Pasfoto = styled.img`
     width: 200px;
     aspect-ratio: 1;
@@ -69,7 +68,7 @@ export const SubCode= styled.div`
     margin-bottom: 7px;
 `
 export const Titlespace = styled.p`
-    width: 40%;
+    width: 50%;
 `
 export const PagePosition = styled.div`
     display: flex;
@@ -78,6 +77,7 @@ export const PagePosition = styled.div`
 `
 export const Eyes = styled.div`
     display: flex;
+    justify-content: center;
     gap: 2rem;
     margin-bottom: 30px;
 `

@@ -7,11 +7,13 @@ import { GetUserListService, Response } from '@services/userlist';
 import { Role } from '@models/User';
 import { statusActions } from '@store/status';
 import Page from '@components/Pagination';
-import { generatePath } from 'react-router-dom';
+import { generatePath, useNavigate } from 'react-router-dom';
 import endpoints from '@constants/routes/admin';
 import { parseDate } from '@utils/converter';
+import { usePermission } from '@hooks/usePermission';
 
-const  Doctor = () => {
+const Doctor = () => {
+    const GetDoctor = usePermission("Get Doctor")
     const LIMIT = 10
     const [users, setUsers] = useState<Response>({
         data: [],
@@ -23,9 +25,12 @@ const  Doctor = () => {
     const [search, setSearch] = useState("")
 
     const dispatch = useAppDispatch()
+    const navigate = useNavigate()
     useEffect(() => {
-        onSearch()
-    }, [dispatch, currentPage, LIMIT])
+        if (GetDoctor) {
+            onSearch()
+        }
+    }, [dispatch, currentPage, LIMIT, GetDoctor])
     
     const onChange = (e: ChangeEvent<HTMLInputElement>) => {
         const { value } = e.currentTarget as HTMLInputElement
@@ -47,16 +52,24 @@ const  Doctor = () => {
         }
     }
 
+    useEffect(() => {
+        if (!GetDoctor) {
+            const credentials = JSON.parse(localStorage.getItem("credentials") || "")
+            const isPatient = credentials.accesses?.some((access: string) => access === "Patient")
+            navigate(isPatient ? generatePath(endpoints.dashboard) : generatePath(endpoints.home))
+        }
+    }, [GetDoctor])
+
     return (
     <Wrapper>
-        <Header to="#patient">Doctor</Header>
+        <Header to="#patient">Dokter</Header>
 
         <Options>
             <SearchBar className="mb-3" controlId="exampleForm.ControlInput1">
-                <Form.Control type="text" placeholder="Search" value={search} onChange={onChange} />
-                <Search onClick={onSearch}>Search</Search>
+                <Form.Control type="text" placeholder="Cari" value={search} onChange={onChange} />
+                <Search onClick={onSearch}>Cari</Search>
             </SearchBar>
-            <AddNew to={generatePath(endpoints.adddoctor)}>Add New</AddNew>
+            <AddNew to={generatePath(endpoints.adddoctor)}>Buat Baru</AddNew>
         </Options>
 
         <Table responsive striped bordered hover>
@@ -64,7 +77,7 @@ const  Doctor = () => {
             <tr>
             <th>No</th>
             <th>Tanggal Dibuat <br/>(dd/mm/yyyy)</th>
-            <th>Nama Doctor</th>
+            <th>Nama Dokter</th>
             <th>NIK</th>
             <th>Tanggal Lahir <br/>(dd/mm/yyyy)</th>
             <th>Jenis Kelamin</th>

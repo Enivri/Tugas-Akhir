@@ -1,4 +1,3 @@
-import { Col } from 'react-bootstrap'
 import styled from 'styled-components'
 import Form from 'react-bootstrap/Form';
 import Row from 'react-bootstrap/Row';
@@ -43,10 +42,6 @@ export const Identity = styled(Row)`
     justify-content: space-between;
     margin-bottom: 10px;
 `
-export const ImageDiv = styled(Col)`
-    display: flex;
-    justify-content: center;
-`
     export const Pasfoto = styled.img`
     width: 200px;
     aspect-ratio: 1;
@@ -70,7 +65,7 @@ export const SubCode= styled.div`
     margin-bottom: 7px;
 `
 export const Titlespace = styled.p`
-    width: 40%;
+    width: 50%;
 `
 export const PagePosition = styled.div`
     display: flex;

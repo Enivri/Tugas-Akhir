@@ -5,12 +5,16 @@ import { ChangeEvent, useEffect, useState } from 'react';
 import { useAppDispatch } from '@store';
 import { statusActions } from '@store/status';
 import Page from '@components/Pagination';
-import { generatePath } from 'react-router-dom';
+import { generatePath, useNavigate } from 'react-router-dom';
 import endpoints from '@constants/routes/admin';
 import { parseDate } from '@utils/converter';
 import { GetPredictionListService, PredictionListResponse } from '@services/predictionlist';
+import { usePermission } from '@hooks/usePermission';
 
 const Prediction = () => {
+    const GetPrediction = usePermission("Get Prediction")
+    const CreatePrediction = usePermission("Create Prediction")
+    const UpdatePrediction = usePermission("Update Prediction")
     const LIMIT = 10
     const [predictions, setPrediction] = useState<PredictionListResponse>({
         data: [],
@@ -22,9 +26,12 @@ const Prediction = () => {
     const [search, setSearch] = useState("")
 
     const dispatch = useAppDispatch()
+    const navigate = useNavigate()
     useEffect(() => {
-        onSearch()
-    }, [dispatch, currentPage, LIMIT])
+        if (GetPrediction) {
+            onSearch()
+        }
+    }, [dispatch, currentPage, LIMIT, GetPrediction])
     
     const onChange = (e: ChangeEvent<HTMLInputElement>) => {
         const { value } = e.currentTarget as HTMLInputElement
@@ -45,16 +52,26 @@ const Prediction = () => {
         }
     }
 
+    useEffect(() => {
+        if (!GetPrediction) {
+            const credentials = JSON.parse(localStorage.getItem("credentials") || "")
+            const isPatient = credentials.accesses?.some((access: string) => access === "Patient")
+            navigate(isPatient ? generatePath(endpoints.dashboard) : generatePath(endpoints.home))
+        }
+    }, [GetPrediction])
+
     return (
     <Wrapper>
-        <Header to="#patient">Prediction</Header>
+        <Header to="#patient">Prediksi</Header>
 
         <Options>
             <SearchBar className="mb-3" controlId="exampleForm.ControlInput1">
-                <Form.Control type="text" placeholder="Search" value={search} onChange={onChange} />
-                <Search onClick={onSearch}>Search</Search>
+                <Form.Control type="text" placeholder="Cari" value={search} onChange={onChange} />
+                <Search onClick={onSearch}>Cari</Search>
             </SearchBar>
-            <AddNew to={generatePath(endpoints.addprediction)}>Add New</AddNew>
+            { CreatePrediction &&(  
+            <AddNew to={generatePath(endpoints.addprediction)}>Buat Baru</AddNew>
+            ) }
         </Options>
 
         <Table responsive striped bordered hover>
@@ -75,17 +92,19 @@ const Prediction = () => {
                     <tr key={index}>
                         <td>{ LIMIT*(currentPage-1)+index+1 }</td>
                         <td>{ parseDate(prediction.created_at) }</td>
-                        <td>{ prediction.user.name }</td>
-                        <td>{ prediction.user.nik }</td>
-                        <td>{ prediction.user.gender }</td>
-                        <td>{ prediction.user.town }</td>
+                        <td>{ prediction.user?.name }</td>
+                        <td>{ prediction.user?.nik }</td>
+                        <td>{ prediction.user?.gender }</td>
+                        <td>{ prediction.user?.town }</td>
                         <td>
                         <ActionButton to={generatePath(endpoints.viewprediction, { predictionId: prediction.id })}>
                             <IconAction className="fa-regular fa-file-lines"></IconAction>
                         </ActionButton>
+                        { UpdatePrediction &&(  
                         <ActionButton to={generatePath(endpoints.editprediction, { predictionId: prediction.id })}>
                             <IconAction className="fa-solid fa-pen-to-square"></IconAction>
                         </ActionButton>
+                        ) }
                         </td>
                     </tr>
                 ))

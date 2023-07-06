@@ -7,18 +7,23 @@ import { useAppDispatch } from '@store';
 import { statusActions } from '@store/status';
 import { GetUserService, Response } from '@services/viewuser';
 import Page from '@components/Pagination';
-import { generatePath, useParams } from 'react-router-dom';
+import { generatePath, useNavigate, useParams } from 'react-router-dom';
 import { parseDate } from '@utils/converter';
 import { DiagnosisDoctorResponse, GetDiagnosisDoctorService } from '@services/diagnosisdoctor';
 import { GetOperationDoctorService, OperationDoctorResponse } from '@services/operationdoctor';
 import { CheckUpDoctorResponse, GetCheckUpDoctorService } from '@services/checkupdoctor';
 import endpoints from '@constants/routes/admin';
+import { usePermission } from '@hooks/usePermission';
 
 type Params = {
     userId: string
 }
 
-const ViewPatient = () => {
+const ViewDoctor = () => {
+    const GetDoctor = usePermission("Get Doctor")
+    const GetDiagnosis = usePermission("Get Diagnosis")
+    const GetOperation = usePermission("Get Operation")
+    const GetCheckUp = usePermission("Get CheckUp")
     const LIMIT = 3
     const [user, setUser] = useState<Response>({
         data: {
@@ -40,6 +45,7 @@ const ViewPatient = () => {
     const [currentPage, setCurrentPage] = useState(1)
     const params = useParams<Params>()
 
+    const navigate = useNavigate()
     const dispatch = useAppDispatch()
     useEffect(() => {
         const fetchData = async () =>{
@@ -53,8 +59,10 @@ const ViewPatient = () => {
                 dispatch(statusActions.setError((err as Error).message))
             }
         }
-        fetchData()
-    }, [dispatch])
+        if (GetDoctor) {
+            fetchData()
+        }
+    }, [dispatch, GetDoctor])
 
     const [diagnosisList, setDiagnosisList] = useState<DiagnosisDoctorResponse>({
         data: [],
@@ -76,8 +84,10 @@ const ViewPatient = () => {
                 dispatch(statusActions.setError((err as Error).message))
             }
         }
-        fetchData()
-    }, [dispatch, params, currentPage, LIMIT])
+        if (GetDiagnosis) {
+            fetchData()
+        }
+    }, [dispatch, params, currentPage, LIMIT, GetDiagnosis])
 
     const [operationList, setOperationList] = useState<OperationDoctorResponse>({
         data: [],
@@ -99,8 +109,10 @@ const ViewPatient = () => {
                 dispatch(statusActions.setError((err as Error).message))
             }
         }
-        fetchData()
-    }, [dispatch, params, currentPage, LIMIT])
+        if (GetOperation) {
+            fetchData()
+        }
+    }, [dispatch, params, currentPage, GetOperation])
 
     const [checkUpList, setCheckUpList] = useState<CheckUpDoctorResponse>({
         data: [],
@@ -122,13 +134,23 @@ const ViewPatient = () => {
                 dispatch(statusActions.setError((err as Error).message))
             }
         }
-        fetchData()
-    }, [dispatch, params, currentPage, LIMIT])
+        if (GetCheckUp) {
+            fetchData()
+        }
+    }, [dispatch, params, currentPage, LIMIT, GetCheckUp])
+
+    useEffect(() => {
+        if (!GetDoctor && !GetDiagnosis && !GetOperation && !GetCheckUp) {
+            const credentials = JSON.parse(localStorage.getItem("credentials") || "")
+            const isPatient = credentials.accesses?.some((access: string) => access === "Patient")
+            navigate(isPatient ? generatePath(endpoints.dashboard) : generatePath(endpoints.home))
+        }
+    }, [GetDoctor, GetDiagnosis, GetOperation, GetCheckUp])
 
     return (
         <Wrapper>
             <Report>
-                <ReportTitle>View Doctor Detail</ReportTitle>
+                <ReportTitle>Detail Dokter</ReportTitle>
                 <Content>
                     <Identity>
                         <Col>           
@@ -241,4 +263,4 @@ const ViewPatient = () => {
     )
 }
 
-export default ViewPatient
+export default ViewDoctor

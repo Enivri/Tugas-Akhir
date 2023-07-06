@@ -13,6 +13,7 @@ export type Diagnosis = {
     left_eye_cond: string
     description: string
     created_at: string
-    user: User
-    prediction: Prediction
+    user?: User
+    doctor?: User
+    prediction?: Prediction
 }

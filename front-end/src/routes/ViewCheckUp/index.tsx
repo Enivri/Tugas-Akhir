@@ -4,16 +4,19 @@ import Col from 'react-bootstrap/Col';
 import { useEffect, useState } from 'react';
 import { useAppDispatch } from '@store';
 import { statusActions } from '@store/status';
-import { useParams } from 'react-router-dom';
+import { generatePath, useNavigate, useParams } from 'react-router-dom';
 import { parseDate } from '@utils/converter';
 import { GetCheckUpService } from '@services/viewcheckup';
 import { CheckUp } from '@models/CheckUp';
+import endpoints from '@constants/routes/admin';
+import { usePermission } from '@hooks/usePermission';
 
 type Params = {
     checkupId: string
 }
 
 const ViewCheckUp= () => {
+    const GetCheckUp = usePermission("Get CheckUp")
     const [checkup, setCheckup] = useState<CheckUp>({        
             id: 0,
             patient_id: 0,
@@ -24,11 +27,12 @@ const ViewCheckUp= () => {
             description: "",
             created_at: "",
             user: undefined,
+            doctor: undefined,
             operation: undefined,
 })
     
     const params = useParams<Params>()
-
+    const navigate = useNavigate()
     const dispatch = useAppDispatch()
     useEffect(() => {
         const fetchData = async () =>{
@@ -38,18 +42,27 @@ const ViewCheckUp= () => {
                 }
                 const res = await dispatch(GetCheckUpService(request)).unwrap()
                 if (res) setCheckup(res)
-                console.log(res)
             } catch(err) {
                 dispatch(statusActions.setError((err as Error).message))
             }
         }
-        fetchData()
-    }, [dispatch])
+        if (GetCheckUp) {
+            fetchData()
+        }
+    }, [dispatch, GetCheckUp])
+
+    useEffect(() => {
+        if (!GetCheckUp) {
+            const credentials = JSON.parse(localStorage.getItem("credentials") || "")
+            const isPatient = credentials.accesses?.some((access: string) => access === "Patient")
+            navigate(isPatient ? generatePath(endpoints.dashboard) : generatePath(endpoints.home))
+        }
+    }, [GetCheckUp])
 
     return (
         <Wrapper>
             <Report>
-                <ReportTitle>View Check Up Detail</ReportTitle>
+                <ReportTitle>Detail Check Up</ReportTitle>
                 <Content>
                     <Identity>
                         <Col>           
@@ -90,9 +103,27 @@ const ViewCheckUp= () => {
 
                         </Col>
                         
-                        <ImageDiv>
-                            <Pasfoto src={checkup?.user?.picture} alt="Image eror" />
-                        </ImageDiv>
+                        <Col>
+                            <SubTitle>
+                                    Identitas Doctor
+                            </SubTitle>
+                                
+                                <SubContent>
+                                    <Titlespace>Nama Lengkap </Titlespace>
+                                    <p>:</p>
+                                    <p>{ checkup?.doctor?.name }</p>
+                                </SubContent>
+                                <SubContent>
+                                    <Titlespace>Tanggal Lahir <br/>(dd/mm/yyyy)</Titlespace>
+                                    <p>:</p>
+                                    <p>{ parseDate(checkup?.doctor?.birth_date ?? "") }</p>
+                                </SubContent>
+                                <SubContent>
+                                    <Titlespace>Jenis kelamin </Titlespace>
+                                    <p>:</p>
+                                    <p>{ checkup?.doctor?.gender }</p>
+                                </SubContent>
+                        </Col>
                     </Identity>
 
                     <Eyes>
@@ -108,14 +139,14 @@ const ViewCheckUp= () => {
                     </Eyes>
 
                     <SecContent>
-                        <Titlemargin>Kode Operation </Titlemargin>
+                        <Titlemargin>Kode Operasi </Titlemargin>
                         <p>:</p>
                         <p>{ checkup?.operation?.code }</p>
                     </SecContent>
 
 
                     <Description>
-                        <h4>Description :</h4>
+                        <h4>Deskripsi :</h4>
                         <p>{checkup?.description}</p>
                     </Description>
 

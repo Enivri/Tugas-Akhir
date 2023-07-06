@@ -12,5 +12,6 @@ export type CheckUp = {
     description: string
     created_at: string
     user?: User
+    doctor?: User
     operation?: Operation
 }

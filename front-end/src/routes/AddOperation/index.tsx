@@ -1,19 +1,21 @@
-import React, { ChangeEvent, useState } from 'react'
+import React, { ChangeEvent, useEffect, useState } from 'react'
 import { Wrapper, Title, Report, ReportTitle, Label, Control, Group, Content, Bottom, SubmitBTN, CancelBTN, Eye, EyeBox, GroupEye, Desc, Formx} from './AddOperation.styles'
 import Row from 'react-bootstrap/Row';
 import { useAppDispatch } from '@store';
-import { useNavigate } from 'react-router-dom';
+import { generatePath, useNavigate } from 'react-router-dom';
 import { statusActions } from '@store/status';
 import InputFile from '@components/InputFile';
 import { CreateOperationRequest, CreateOperationService } from '@services/createoperation';
+import endpoints from "@constants/routes/admin"
+import { usePermission } from '@hooks/usePermission';
 
 const AddOperation = () => {
-
+    const CreateOperation = usePermission("Create Operation")
     const dispatch = useAppDispatch()
     const navigate = useNavigate()
 
     const [createOperationRequest, setCreateOperationRequest] = useState<CreateOperationRequest>({
-        code:"",
+        diagnosis_code:"",
         right_eye_pic: undefined,
         left_eye_pic: undefined,
         result:"",
@@ -22,14 +24,16 @@ const AddOperation = () => {
     
 
     const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-        e.preventDefault()
-        try{
-            await dispatch(CreateOperationService(createOperationRequest)).unwrap()
-            navigate("/operation")
+        if(CreateOperation) {
+            e.preventDefault()
+            try{
+                await dispatch(CreateOperationService(createOperationRequest)).unwrap()
+                navigate(generatePath(endpoints.operation))
 
-        } catch(err) {
-            alert((err as Error).message)
-            dispatch(statusActions.setError((err as Error).message))
+            } catch(err) {
+                alert((err as Error).message)
+                dispatch(statusActions.setError((err as Error).message))
+            }
         }
     }
 
@@ -85,19 +89,27 @@ const AddOperation = () => {
         }
     }
 
+    useEffect(() => {
+        if (!CreateOperation) {
+            const credentials = JSON.parse(localStorage.getItem("credentials") || "")
+            const isPatient = credentials.accesses?.some((access: string) => access === "Patient")
+            navigate(isPatient ? generatePath(endpoints.dashboard) : generatePath(endpoints.home))
+        }
+    }, [CreateOperation])
+
     return (
         <Wrapper>
-            <Title>Add New Operation</Title>
+            <Title>Buat Operasi Baru</Title>
             
             <Report>
-                <ReportTitle>Operation Form</ReportTitle>
+                <ReportTitle>Form Operasi</ReportTitle>
 
                 <Content className='my-3'>
                         <Formx onSubmit = {onSubmit}>
                         <Row>                   
                                 <Group>
-                                    <Label>Diagnosis Code</Label>
-                                    <Control type="text" placeholder="Code" id="code" value={createOperationRequest.code} onChange={onChange}/>
+                                    <Label>Kode Diagnosa</Label>
+                                    <Control type="text" placeholder="Code" id="diagnosis_code" value={createOperationRequest.diagnosis_code} onChange={onChange}/>
                                 </Group>
 
                                 <Eye>
@@ -125,17 +137,17 @@ const AddOperation = () => {
                                 </Eye>
 
                                 <Group>
-                                    <Label>Result</Label>
-                                    <Control type="text" placeholder="Successful/Unsuccessful" id="result" value={createOperationRequest.result} onChange={onChange}/>
+                                    <Label>Hasil</Label>
+                                    <Control type="text" placeholder="Berhasil / Gagal" id="result" value={createOperationRequest.result} onChange={onChange}/>
                                 </Group>
 
-                                <Label>Description</Label>
-                                <Desc placeholder="Type here" id="description" value={createOperationRequest.description} onChange={onChange}/>
+                                <Label>Deskripsi</Label>
+                                <Desc placeholder="Deskripsi" id="description" value={createOperationRequest.description} onChange={onChange}/>
                         </Row>
 
                         <Bottom>
-                            <CancelBTN to="/operation">Cancel</CancelBTN>
-                            <SubmitBTN type="submit">Submit</SubmitBTN>
+                            <CancelBTN to={generatePath(endpoints.operation)}>Batal</CancelBTN>
+                            <SubmitBTN type="submit">Kirim</SubmitBTN>
                         </Bottom>
                         </Formx>
                 </Content>
